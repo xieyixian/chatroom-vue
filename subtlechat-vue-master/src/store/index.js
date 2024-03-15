@@ -21,7 +21,8 @@ const store =  new Vuex.Store({
     stomp:null,
     isDot:{},//两用户之间是否有未读信息
     errorImgUrl:"http://39.108.169.57/group1/M00/00/00/J2ypOV7wJkyAAv1fAAANuXp4Wt8303.jpg",//错误提示图片
-    shotHistory:{}//拍一拍的记录历史
+    shotHistory:{},//拍一拍的记录历史
+    conversation:{}//房间号
   },
   mutations:{
     initRoutes(state,data){
@@ -93,7 +94,9 @@ const store =  new Vuex.Store({
           state.users=resp;
         }
       })
-    }
+    },
+   
+
   },
   actions:{
     /**
@@ -113,6 +116,7 @@ const store =  new Vuex.Store({
      */
     connect(context){
       //连接Stomp站点
+      console.log("尝试连接WebSocket服务...");
       context.state.stomp=Stomp.over(new SockJS('/ws/ep'));
       context.state.stomp.connect({},success=>{
         /**
