@@ -73,9 +73,52 @@ export default {
 	'currentList'
 	]),
   methods:{
-  	changeCurrentSession:function (currentSession) {
-  		this.$store.commit('changeCurrentSession',currentSession)
-  	}
+	changeCurrentSession(currentSession) {
+    this.$store.commit('changeCurrentSession', currentSession);
+    // 如果是私聊且不是群聊或机器人，尝试检查或创建房间
+    if (currentSession.username !== '群聊' && currentSession.username !== '机器人') {
+      this.initPrivateChat(currentSession);
+    }
+  },
+  initPrivateChat(currentSession) {
+      // 构建请求的payload，通常JSON的属性名使用小写
+      const payload = {
+        username: this.user.username, // 当前登录用户的用户名
+        otherUsername: currentSession.username // 选择进行私聊的用户的用户名
+      };
+    
+      // 发送POST请求
+      this.postRequest("/userchat/conversations/join", payload)
+        .then(response => {
+          this.$store.state.conversation = response.conversation;
+        //console.log("11Room ID:", response);
+          // 检查后端是否返回了预期的响应
+
+        })
+        .catch(error => {
+          // 错误处理
+          console.error("Error initializing private chat:", error);
+          if (error.response) {
+            // 服务器响应了请求，但状态码不是2xx
+            console.log("Error response data:", error.response.data);
+            console.log("Error response status:", error.response.status);
+          } else if (error.request) {
+            // 请求已发出，但没有收到响应
+            console.log("No response received:", error.request);
+          } else {
+            // 在设置请求时发生了某些事情
+            console.log("Error setting up request:", error.message);
+          }
+        });
+		this.getRequest("/userchat/conversations/41/messages").then(resp=>{
+          if (resp){
+			console.log("11112111Error response data:", resp);
+            //Vue.set(state.sessions,'群聊',resp);
+          }
+        })
+    }
+
+
   }
 }
 </script>

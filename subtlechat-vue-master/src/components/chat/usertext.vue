@@ -59,7 +59,12 @@ export default {
       }
       let msgObj=new Object();
       msgObj.content=this.content;
+      msgObj.messageText=this.content;
       msgObj.messageTypeId=1;
+      console.log(this.$store.state);
+      console.log(this.$store.state.conversation.conversationId);
+      console.log(JSON.parse(JSON.stringify(this.$store.state.conversation)));
+
       //发送群聊消息
       if (this.currentSession.username=="群聊"){
         console.log(this.content);
@@ -77,6 +82,11 @@ export default {
       else{
         msgObj.from=this.$store.state.currentUser.username;
         msgObj.fromNickname=this.$store.state.currentUser.nickname;
+        msgObj.to=this.currentSession.username;
+        msgObj.senderUsername=this.$store.state.currentUser.username;
+        msgObj.senderUser=this.$store.state.currentUser;
+        msgObj.conversation=this.$store.state.conversation;
+        msgObj.conversationId=this.$store.state.conversation.conversationId;
         msgObj.to=this.currentSession.username;
         this.$store.state.stomp.send("/ws/chat",{},JSON.stringify(msgObj));
         //提交私聊消息记录
