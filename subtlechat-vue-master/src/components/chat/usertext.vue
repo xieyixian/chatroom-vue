@@ -36,7 +36,8 @@ export default {
   data () {
     return {
       faceList:[],//表情包数据
-      content:''
+      content:'',
+      isLimited: false
     }
   },
   mounted(){
@@ -57,17 +58,28 @@ export default {
         });
         return;
       }
+      if(this.isLimited){
+        this.$message({
+          showClose: true,
+          message: '操作太频繁，稍后再试'
+        });
+        return;
+      }
+      this.isLimited = true;
       let msgObj=new Object();
       msgObj.content=this.content;
       msgObj.messageText=this.content;
       msgObj.messageTypeId=1;
+      msgObj.from=this.$store.state.currentUser.username;
+
       console.log(this.$store.state);
       console.log(this.$store.state.conversation.conversationId);
       console.log(JSON.parse(JSON.stringify(this.$store.state.conversation)));
-
+      console.log('currentUserId:',this.$store.state.currentUser.id);
       //发送群聊消息
       if (this.currentSession.username=="群聊"){
         console.log(this.content);
+        msgObj.fromId = this.$store.state.currentUser.id;
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
       }
       //给机器人发送消息
@@ -80,7 +92,7 @@ export default {
       }
       //发送私聊消息
       else{
-        msgObj.from=this.$store.state.currentUser.username;
+        // msgObj.from=this.$store.state.currentUser.username;
         msgObj.fromNickname=this.$store.state.currentUser.nickname;
         msgObj.to=this.currentSession.username;
         msgObj.senderUsername=this.$store.state.currentUser.username;
@@ -94,6 +106,8 @@ export default {
       }
       //清空输入框
       this.content='';
+
+      setTimeout(()=>{this.isLimited = false},5000);
     },
   	addMessage (e) {
   		if (e.ctrlKey && e.keyCode ===13 && this.content.length) {
