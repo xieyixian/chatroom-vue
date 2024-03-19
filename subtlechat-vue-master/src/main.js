@@ -5,6 +5,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import store from './store/index';
 import 'font-awesome/css/font-awesome.min.css'
+import CryptoJS from 'crypto-js/crypto-js'
+
 
 /*
 封装请求方法,供全局调用
@@ -49,3 +51,52 @@ new Vue({
   store,//这里需要注意
   render: h => h(App)
 }).$mount('#app')
+
+// 默认的 KEY 与 iv 如果没有给
+const KEY = CryptoJS.enc.Utf8.parse("1234567890123456");
+const IV = CryptoJS.enc.Utf8.parse('1234567890123456');
+/**
+ * AES加密 ：字符串 key iv  返回base64
+ */
+export function Encrypt(word, keyStr, ivStr) {
+  let key = KEY
+  let iv = IV
+
+  if (keyStr) {
+    key = CryptoJS.enc.Utf8.parse(keyStr);
+    iv = CryptoJS.enc.Utf8.parse(ivStr);
+  }
+
+  let srcs = CryptoJS.enc.Utf8.parse(word);
+  var encrypted = CryptoJS.AES.encrypt(srcs, key, {
+    iv: iv,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.ZeroPadding
+  });
+  // console.log("-=-=-=-", encrypted.ciphertext)
+  return CryptoJS.enc.Base64.stringify(encrypted.ciphertext);
+
+}
+/**
+ * AES 解密 ：字符串 key iv  返回base64
+ *
+ */
+export function Decrypt(word, keyStr, ivStr) {
+  let key = KEY; // 假设KEY是一个先前定义的常量
+  let iv = IV; // 假设IV是一个先前定义的常量
+
+  if (keyStr) {
+    key = CryptoJS.enc.Utf8.parse(keyStr);
+    iv = CryptoJS.enc.Utf8.parse(ivStr);
+  }
+
+  // 直接使用Base64编码的字符串进行解密
+  var decrypt = CryptoJS.AES.decrypt(word, key, {
+    iv: iv,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.ZeroPadding
+  });
+
+  var decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
+  return decryptedStr.toString();
+}

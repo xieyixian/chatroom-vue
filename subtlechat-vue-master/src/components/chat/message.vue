@@ -2,14 +2,14 @@
   <div id="message" v-scroll-bottom="sessions">
 		<div v-if="currentSession&&currentSession.username!='群聊'">
   	<ul >
-  		<li v-for="entry in sessions[user.username+'#'+currentSession.username]">
+  		<li v-for="(entry,index) in sessions[user.username+'#'+currentSession.username]">
   			<p class="time">
   				<span>{{entry.date | time}}</span>
   			</p>
   			<div class="main" :class="{self:entry.self}">
 					<p class="username">{{entry.fromNickname}}</p>
   				<img class="avatar" :src="entry.self ? user.userProfile: currentSession.userProfile" alt="">
-  				<p v-if="entry.messageTypeId==1" class="text">{{entry.content}}</p>
+          <p v-if="entry.messageTypeId==1" class="text"><button v-if="entry.self" class="el-icon-close" @click="convertMessage(index)"></button>{{decrypt(entry.content)}}</p>
 					<img v-if="entry.messageTypeId==2" :src="entry.content" class="img">
   			</div>
   		</li>
@@ -17,14 +17,14 @@
 	</div>
 		<div v-else>
 		<ul>
-			<li v-for="entry in sessions['群聊']" :key="entry.id">
+			<li v-for="(entry,index) in sessions['群聊']" :key="entry.id">
 				<p class="time">
 					<span>{{entry.createTime | time}}</span>
 				</p>
 				<div class="main" :class="{self:entry.fromId==user.id}">
 					<p class="username">{{entry.fromName}}</p>
 					<img @dblclick="takeAShot" class="avatar" :src="entry.fromId==user.id? user.userProfile:entry.fromProfile" alt="">
-					<div v-if="(entry.messageTypeId==1)"><p class="text" v-html="entry.content"></p></div>
+					<div v-if="(entry.messageTypeId==1)"><p class="text"><button v-if="entry.fromId==user.id" class="el-icon-close" @click="convertMessage(index,true)"></button>{{ decrypt(entry.content) }}</p></div>
 					<div v-else>
             <!--图片预览与无法加载图片的图标-->
 						<el-image :src="entry.content"
@@ -44,12 +44,13 @@
 
 <script>
 import {mapState} from 'vuex'
+import {Decrypt} from "@/main";
 
 export default {
   name: 'message',
   data () {
     return {
-    	user:JSON.parse(window.sessionStorage.getItem('user'))
+    	user:JSON.parse(window.sessionStorage.getItem('user')),
     }
   },
   computed:mapState([
@@ -102,11 +103,29 @@ export default {
     }
   },
 	methods:{
+    decrypt(content) {
+      return Decrypt(content)
+    },
 		takeAShot(fromName,toName){
 			console.log("拍了一怕");
 			let s=fromName+"拍了拍"+toName;
 
-		}
+		},
+    convertMessage(index,flag){
+      let userName = this.user.username+'#'+this.currentSession.username;
+        console.log(this.sessions,userName,index,"撤回---------")
+
+      // 判断是否群聊
+      if(flag){
+        this.sessions["群聊"].splice(index,1)
+      } else {
+        this.sessions[userName].splice(index,1)
+      }
+      // console.log(this.sessions[userName].splice(index,1),"撤回---------")
+
+
+      // this.isWithdrawn = true;
+    }
 	}
 }
 </script>
@@ -153,6 +172,9 @@ export default {
   		background-color: #fafafa;
       border-radius: 4px;
       line-height: 30px;
+      i.el-icon-close {
+        cursor: pointer;
+      }
   	}
 		.img{
 			display: inline-block;

@@ -29,6 +29,8 @@
 
 <script>
 import {mapState} from 'vuex';
+import {Encrypt} from "@/main";
+
 const appData=require("../../utils/emoji.json")//引入存放emoji表情的json文件
 
 export default {
@@ -36,7 +38,8 @@ export default {
   data () {
     return {
       faceList:[],//表情包数据
-      content:''
+      content:'',
+      encryptedMessage: "",
     }
   },
   mounted(){
@@ -58,8 +61,9 @@ export default {
         return;
       }
       let msgObj=new Object();
-      msgObj.content=this.content;
-      msgObj.messageText=this.content;
+      msgObj.content=Encrypt(this.content);
+      msgObj.messageText=Encrypt(this.content);
+
       msgObj.messageTypeId=1;
       console.log(this.$store.state);
       console.log(this.$store.state.conversation.conversationId);
@@ -68,6 +72,7 @@ export default {
       //发送群聊消息
       if (this.currentSession.username=="群聊"){
         console.log(this.content);
+
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
       }
       //给机器人发送消息
