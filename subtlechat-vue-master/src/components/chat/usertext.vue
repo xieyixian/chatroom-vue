@@ -439,7 +439,7 @@ export default {
       if(f){
         let output = document.getElementById('output');
         let imgData = output.src;
-        this.postKeyValueRequest("/base64ossFileUpload",{
+        this.postRequest("/base64ossFileUpload",{
           'dataStr': imgData,
           'filename': f.name,
           'module': 'group-chat'
