@@ -9,17 +9,81 @@
           <i class="fa fa-smile-o" aria-hidden="true"></i>
         </el-button>
       </el-popover>
-    <el-upload
-            class="upload-btn"
-            action="/ossFileUpload?module=group-chat"
-            :before-upload="beforeAvatarUpload"
-            :on-success="imgSuccess"
-            :on-error="imgError"
-            :show-file-list="false"
-            accept=".jpg,.jpeg,.png,.JPG,JPEG,.PNG,.gif,.GIF"
-            >
-      <el-button id="uploadImgBtn" icon="el-icon-picture-outline"></el-button>
-    </el-upload>
+      <el-upload
+              class="upload-btn"
+              action="/ossFileUpload?module=group-chat"
+              :before-upload="beforeAvatarUpload"
+              :on-success="imgSuccess"
+              :on-error="imgError"
+              :show-file-list="false"
+              accept=".jpg,.jpeg,.png,.JPG,JPEG,.PNG,.gif,.GIF"
+              >
+        <el-button id="uploadImgBtn" icon="el-icon-picture-outline"></el-button>
+      </el-upload>
+      <el-button id="steganographyBtn" slot="reference" class="no-border" @click="showDialog">
+        <i class="fa" aria-hidden="true">隐写图片</i>
+      </el-button>
+      <el-dialog :visible.sync="dialogVisible" title="隐写图片" width="80%" @close="closeDialog" top>
+        <div class="emotionList">
+          <div style="height: 30px;line-height: 30px;width: 100%">选择文件：<input type='file' id='file' @change="importImage"/></div>
+          <hr />
+          <div style="width: 100%;">
+            <span style="width: 100%">图片预览</span>
+            <canvas id='canvas' style="width: 100%;"></canvas>
+          </div>
+          <hr />
+          <!--要隐写的信息-->
+          <div style="width: 100%;margin: 10px 0;">
+            隐写信息：<textarea id='msgContent' cols="100" rows="1" style="border-color: #e6a23c"></textarea>
+            <button id='encode' class='submit' @click="encode">隐写</button>
+          </div>
+          <hr />
+          <!--隐写后的图片-->
+          <div style="width: 100%;">
+            隐写图片：<img id='output' style="width: 100%;"/>
+          </div>
+          <hr />
+          <div>
+            <button id='decode' @click="decode">从隐写图片读取信息</button>
+            读出的隐写内容：<span id='messageDecoded'></span>
+          </div>
+          <hr />
+          <!--解密出的信息-->
+          <div id="footer" slot="footer">
+            <span style="display: inline-block;float: right">
+              <button id='close' @click="closeDialog">取消</button>
+              <button id='selectImg' @click="selectImg">上传</button>
+            </span>
+          </div>
+        </div>
+      </el-dialog>
+
+      <el-button id="unSteganographyBtn" slot="reference" class="no-border" @click="parseShowDialog">
+        <i class="fa" aria-hidden="true">解析隐写图片</i>
+      </el-button>
+      <el-dialog :visible.sync="parseDialogVisible" title="解析隐写图片" width="80%" @close="parseCloseDialog" top>
+        <div class="emotionList">
+          <div style="height: 30px;line-height: 30px;width: 100%">
+            选择文件：<input type='file' id='parseFile' @change="parseImportImage"/></div>
+          <hr />
+          <div style="width: 100%;">
+            <span style="width: 100%">图片预览</span>
+            <canvas id='parseCanvas' style="width: 100%;"></canvas>
+          </div>
+          <hr />
+          <div>
+            <button id='parseDecode' @click="parseDecode">从隐写图片读取信息</button>
+            读出的隐写内容：<span id='parseMessageDecoded'></span>
+          </div>
+          <hr />
+          <!--解密出的信息-->
+          <div id="parseFooter" slot="footer">
+            <span style="display: inline-block;float: right">
+              <button id='parseClose' @click="parseCloseDialog">取消</button>
+            </span>
+          </div>
+        </div>
+      </el-dialog>
     </div>
     <textarea id="textarea" placeholder="按 Ctrl + Enter 发送" v-model="content" v-on:keyup="addMessage">
     </textarea>
@@ -29,6 +93,7 @@
 
 <script>
 import {mapState} from 'vuex';
+
 const appData=require("../../utils/emoji.json")//引入存放emoji表情的json文件
 
 export default {
@@ -37,6 +102,8 @@ export default {
     return {
       faceList:[],//表情包数据
       content:'',
+      dialogVisible: false,
+      parseDialogVisible: false,
       isLimited: false
     }
   },
@@ -136,6 +203,7 @@ export default {
        if (!isImg){
          this.$message.error('上传图片格式不符合要求！');
        }
+       console.log('limit1m,isImg',isLt1M,isImg)
       return isLt1M&&isImg;
     },
     // 图片上传成功
@@ -183,6 +251,292 @@ export default {
       // console.log(this.faceList[index]);
       return;
 
+    },
+    showDialog(){
+      this.dialogVisible = true;
+    },
+    closeDialog(){
+      this.dialogVisible = false;
+      let file = document.getElementById('file');
+      file.value = '';
+      let message = document.getElementById('msgContent');
+      message.value = '';
+      //隐写后的图片
+      let output = document.getElementById('output');
+      output.src = '';
+      //画布
+      let canvas = document.getElementById('canvas');
+      let ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    },
+    importImage(e){
+      let file = document.getElementById('file');
+      let isValidated = this.beforeAvatarUpload(file.files[0]);
+      if(!isValidated){
+        console.log('===================');
+        return false;
+      }
+      let reader = new FileReader();
+      reader.onload = function (event) {
+        let img = new Image();
+        img.onload = function () {
+          let ctx = document.getElementById('canvas').getContext('2d');
+          ctx.canvas.width = img.width;
+          ctx.canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    },
+    encode() {
+      //信息
+      let message = document.getElementById('msgContent').value;
+      //隐写后的图片
+      let output = document.getElementById('output');
+      //画布
+      let canvas = document.getElementById('canvas');
+      let ctx = canvas.getContext('2d');
+      console.log(message)
+      //是否超过能隐写的最大量
+      let pixelCount = ctx.canvas.width * ctx.canvas.height;
+      if ((message.length + 1) * 16 > pixelCount * 4 * 0.75) {
+        alert('内容太多了，超过了可写入的最大量');
+        return;
+      }
+      //核心函数：隐写
+      let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+      //将二进制编码信息转为字符串
+      let getNumberFromBits = function (bytes, history) {
+        let number = 0, pos = 0;
+        while (pos < 16) {
+          let loc = getNextLocation(history, bytes.length);
+          let bit = getBit(bytes[loc], 0);
+          number = setBit(number, pos, bit);
+          pos++;
+        }
+        return number;
+      };
+      let getNextLocation = function (history, total) {
+        let pos = history.length;
+        let loc = Math.abs(pos + 1) % total;
+        while (true) {
+          if (loc >= total) {
+            loc = 0;
+          } else if (history.indexOf(loc) >= 0) {
+            loc++;
+          } else if ((loc + 1) % 4 === 0) {
+            loc++;
+          } else {
+            history.push(loc);
+            return loc;
+          }
+        }
+      };
+      let setBit = function (number, location, bit) {
+        return (number & ~(1 << location)) | (bit << location);
+      };
+      //将信息字符串转为二进制编码
+      let getMessageBits = function (message) {
+        let messageBits = [];
+        for (let i = 0; i < message.length; i++) {
+          let code = message.charCodeAt(i);
+          messageBits = messageBits.concat(getBitsFromNumber(code));
+        }
+        return messageBits;
+      };
+      let getBitsFromNumber = function (number) {
+        let bits = [];
+        for (let i = 0; i < 16; i++) {
+          bits.push(getBit(number, i));
+        }
+        return bits;
+      };
+      let getBit = function (number, location) {
+        return ((number >> location) & 1);
+      };
+      let encodeMessage = function (colors, message) {
+        let messageBits = getBitsFromNumber(message.length);
+        messageBits = messageBits.concat(getMessageBits(message));
+        let history = [];
+        let pos = 0;
+        while (pos < messageBits.length) {
+          let loc = getNextLocation(history, colors.length);
+          colors[loc] = setBit(colors[loc], 0, messageBits[pos]);
+          while ((loc + 1) % 4 !== 0) {
+            loc++;
+          }
+          colors[loc] = 255;
+          pos++;
+        }
+      };
+      encodeMessage(imgData.data, message);
+      ctx.putImageData(imgData, 0, 0);
+      this.$message({
+        showClose: true,
+        message: '隐写成功，信息已隐藏到图片中'
+      });
+      //显示出隐写后的图片
+      output.src = canvas.toDataURL();
+    },
+    decode() {
+      let ctx = document.getElementById('canvas').getContext('2d');
+      let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+      //核心功能：从图片数据中读取隐写信息
+      let getNextLocation = function (history, total) {
+        var pos = history.length;
+        var loc = Math.abs(pos + 1) % total;
+        while (true) {
+          if (loc >= total) {
+            loc = 0;
+          } else if (history.indexOf(loc) >= 0) {
+            loc++;
+          } else if ((loc + 1) % 4 === 0) {
+            loc++;
+          } else {
+            history.push(loc);
+            return loc;
+          }
+        }
+      };
+      //将二进制编码信息转为字符串
+      let getNumberFromBits = function (bytes, history) {
+        var number = 0, pos = 0;
+        while (pos < 16) {
+          var loc = getNextLocation(history, bytes.length);
+          var bit = getBit(bytes[loc], 0);
+          number = setBit(number, pos, bit);
+          pos++;
+        }
+        return number;
+      };
+      let getBit = function (number, location) {
+        return ((number >> location) & 1);
+      };
+      let setBit = function (number, location, bit) {
+        return (number & ~(1 << location)) | (bit << location);
+      };
+      let decodeMessage = function (colors) {
+        let _0x265a = ['length', 'push', 'fromCharCode', 'join'];
+        let _0x1c66 = function (_0x265a55, _0x1c6643) { _0x265a55 = _0x265a55 - 0x0;
+          let _0x2081ad = _0x265a[_0x265a55]; return _0x2081ad; };
+        let _0x2ad986 = function (_0x5d3dbb, _0x36e20f, _0x4c778b, _0x1e11f6, _0x377eb9) { return _0x1c66(_0x1e11f6 - -0x169, _0x4c778b); };
+        let _0xeb9032 = function (_0x1ff9d9, _0x7ca6ec, _0x5d43c2, _0xaf192e, _0x146982) { return _0x1c66(_0xaf192e - -0x169, _0x5d43c2); };
+        let _0x4e4429 = function (_0x1099e4, _0x3d47d8, _0x9623bb, _0x8f809f, _0x2632e4) { return _0x1c66(_0x8f809f - -0x169, _0x9623bb); };
+        let _0x3ab227 = function (_0xe7a97, _0x3e4f1d, _0x3dc243, _0x7d20c1, _0x541a1b) { return _0x1c66(_0x7d20c1 - -0x169, _0x3dc243); };
+        let history = [];
+        let messageSize = getNumberFromBits(colors, history); if ((messageSize + 0x1) * 0x10 > colors[_0x2ad986(-0x167, -0x169, -0x168, -0x169, -0x16a)] * 0.75) { return ''; }
+        let msg = []; for (let i = 0x0; i < messageSize; i++) { let code = getNumberFromBits(colors, history);
+          msg[_0x2ad986(-0x168, -0x169, -0x16a, -0x168, -0x169)](String[_0x4e4429(-0x168, -0x168, -0x167, -0x167, -0x167)](code)); }
+          return msg[_0x4e4429(-0x166, -0x165, -0x166, -0x166, -0x166)]('');
+      }
+      document.getElementById('messageDecoded').innerHTML = decodeMessage(imgData.data);
+    },
+    selectImg(){
+      let file = document.getElementById('file');
+      let f = file.files[0];
+      if(f){
+        let output = document.getElementById('output');
+        let imgData = output.src;
+        this.postKeyValueRequest("/base64ossFileUpload",{
+          'dataStr': imgData,
+          'filename': f.name,
+          'module': 'group-chat'
+        }).then(resp=>{
+            this.imgSuccess(resp);
+        });
+      }
+      this.dialogVisible = false;
+    },
+
+    //=======================================
+    parseShowDialog(){
+      this.parseDialogVisible = true;
+    },
+    parseImportImage(e){
+      let file = document.getElementById('parseFile');
+      // let isValidated = this.beforeAvatarUpload(file.files[0]);
+      // if(!isValidated){
+      //   return false;
+      // }
+      let reader = new FileReader();
+      reader.onload = function (event) {
+        let img = new Image();
+        img.onload = function () {
+          let ctx = document.getElementById('parseCanvas').getContext('2d');
+          ctx.canvas.width = img.width;
+          ctx.canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    },
+    parseCloseDialog(){
+      this.parseDialogVisible = false;
+      let file = document.getElementById('parseFile');
+      file.value = '';
+      //画布
+      let canvas = document.getElementById('parseCanvas');
+      let ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      //
+      let parseMessageDecoded = document.getElementById('parseMessageDecoded');
+      parseMessageDecoded.innerHTML = '';
+    },
+    parseDecode() {
+      let ctx = document.getElementById('parseCanvas').getContext('2d');
+      let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+      //核心功能：从图片数据中读取隐写信息
+      let getNextLocation = function (history, total) {
+        var pos = history.length;
+        var loc = Math.abs(pos + 1) % total;
+        while (true) {
+          if (loc >= total) {
+            loc = 0;
+          } else if (history.indexOf(loc) >= 0) {
+            loc++;
+          } else if ((loc + 1) % 4 === 0) {
+            loc++;
+          } else {
+            history.push(loc);
+            return loc;
+          }
+        }
+      };
+      //将二进制编码信息转为字符串
+      let getNumberFromBits = function (bytes, history) {
+        var number = 0, pos = 0;
+        while (pos < 16) {
+          var loc = getNextLocation(history, bytes.length);
+          var bit = getBit(bytes[loc], 0);
+          number = setBit(number, pos, bit);
+          pos++;
+        }
+        return number;
+      };
+      let getBit = function (number, location) {
+        return ((number >> location) & 1);
+      };
+      let setBit = function (number, location, bit) {
+        return (number & ~(1 << location)) | (bit << location);
+      };
+      let decodeMessage = function (colors) {
+        let _0x265a = ['length', 'push', 'fromCharCode', 'join'];
+        let _0x1c66 = function (_0x265a55, _0x1c6643) { _0x265a55 = _0x265a55 - 0x0;
+          let _0x2081ad = _0x265a[_0x265a55]; return _0x2081ad; };
+        let _0x2ad986 = function (_0x5d3dbb, _0x36e20f, _0x4c778b, _0x1e11f6, _0x377eb9) { return _0x1c66(_0x1e11f6 - -0x169, _0x4c778b); };
+        let _0xeb9032 = function (_0x1ff9d9, _0x7ca6ec, _0x5d43c2, _0xaf192e, _0x146982) { return _0x1c66(_0xaf192e - -0x169, _0x5d43c2); };
+        let _0x4e4429 = function (_0x1099e4, _0x3d47d8, _0x9623bb, _0x8f809f, _0x2632e4) { return _0x1c66(_0x8f809f - -0x169, _0x9623bb); };
+        let _0x3ab227 = function (_0xe7a97, _0x3e4f1d, _0x3dc243, _0x7d20c1, _0x541a1b) { return _0x1c66(_0x7d20c1 - -0x169, _0x3dc243); };
+        let history = [];
+        let messageSize = getNumberFromBits(colors, history); if ((messageSize + 0x1) * 0x10 > colors[_0x2ad986(-0x167, -0x169, -0x168, -0x169, -0x16a)] * 0.75) { return ''; }
+        let msg = []; for (let i = 0x0; i < messageSize; i++) { let code = getNumberFromBits(colors, history);
+          msg[_0x2ad986(-0x168, -0x169, -0x16a, -0x168, -0x169)](String[_0x4e4429(-0x168, -0x168, -0x167, -0x167, -0x167)](code)); }
+        return msg[_0x4e4429(-0x166, -0x165, -0x166, -0x166, -0x166)]('');
+      }
+      document.getElementById('parseMessageDecoded').innerHTML = decodeMessage(imgData.data);
     },
   }
 }
@@ -272,5 +626,24 @@ export default {
 /* 正在点击的链接*/
 .emotionItem:active {
   text-decoration: none;
+}
+.no-border{
+  border: none;
+}
+.popover-style{
+  min-height: 800px !important;
+}
+hr{
+  margin: 3px 0;
+  width: 100%;
+}
+#footer,#parseFooter{
+  width: 100%;
+}
+#footer button,#parseFooter button{
+  margin: 0 5px;
+  height: 35px;
+  width: 70px;
+  line-height: 35px;
 }
 </style>
