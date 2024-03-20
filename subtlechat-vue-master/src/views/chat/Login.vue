@@ -172,9 +172,9 @@
               },1000);
               if (resp){
                 //保存当前用户到vuex
-                this.$store.state.currentUser=resp.obj;
+                this.$store.state.currentUser=resp.obj.user;
                 //保存登录用户到sessionStorage中
-                window.sessionStorage.setItem("user",JSON.stringify(resp.obj));
+                window.sessionStorage.setItem("user",JSON.stringify(resp.obj.user));
                 let path=this.$route.query.redirect;
                 this.$router.replace((path=='/'||path==undefined)?"/chatroom":path);
               }else {

@@ -86,12 +86,12 @@ export default {
         username: this.user.username, // 当前登录用户的用户名
         otherUsername: currentSession.username // 选择进行私聊的用户的用户名
       };
-    
+
       // 发送POST请求
       this.postRequest("/userchat/conversations/join", payload)
         .then(response => {
           this.$store.state.conversation = response.conversation;
-        //console.log("11Room ID:", response);
+  
           // 检查后端是否返回了预期的响应
 
         })
@@ -111,6 +111,13 @@ export default {
           }
         });
 		this.getRequest("/userchat/conversations/41/messages").then(resp=>{
+          if (resp){
+			console.log("11112111Error response data:", resp);
+            //Vue.set(state.sessions,'群聊',resp);
+          }
+        })
+
+		this.postRequest("/api/groupchat/send?groupId=2&messageText=Hello%20world!&messageTypeId=1&senderUsername=1234").then(resp=>{
           if (resp){
 			console.log("11112111Error response data:", resp);
             //Vue.set(state.sessions,'群聊',resp);
