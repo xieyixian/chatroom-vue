@@ -2,7 +2,7 @@
 	<div id="message" v-scroll-bottom="sessions">
 		  <div v-if="currentSession&&currentSession.username!='群聊'">
 		<ul >
-			<li v-for="entry in sessions[1234+'#'+currentSession.username]" >
+			<li v-for="entry in sessions[user.username+'#'+currentSession.username]" >
 				<p class="time">
 					<span>{{entry.date | time}}</span>
 				</p>
