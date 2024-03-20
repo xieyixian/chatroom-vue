@@ -47,6 +47,18 @@
       window.addEventListener("beforeunload",()=>{
         sessionStorage.setItem("state",JSON.stringify(this.$store.state))
       })
+
+      //会话续命interval
+      let interval = setInterval(()=>{
+        let userStr = window.sessionStorage.getItem("user");
+        let user = JSON.parse(userStr);
+        if(user){
+          this.putRequest('/continueLife',user).then(resp=>{
+          })
+        }else{
+          clearInterval(interval)
+        }
+      },5000)
     },
     components:{
       toolbar,
