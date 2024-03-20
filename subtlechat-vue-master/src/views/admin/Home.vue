@@ -1,20 +1,19 @@
 <template>
   <el-container>
     <el-header class="homeHeader">
-      <div class="title">微言聊天室管理端</div>
+      <div class="title">SubtleChat Room Management</div>
       <div>
         <el-dropdown class="choices" @command="commandHandler">
         <span class="el-dropdown-link">
-          {{user.name}}<i><img :src="user.userProfile"></i>
+          {{ user.name }}<i><img :src="user.userProfile"></i>
         </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="userInfo">个人中心</el-dropdown-item>
-            <el-dropdown-item command="setting">设置</el-dropdown-item>
-            <el-dropdown-item command="logout" divided>注销登录</el-dropdown-item>
+            <el-dropdown-item command="userInfo">User Center</el-dropdown-item>
+            <el-dropdown-item command="setting">Settings</el-dropdown-item>
+            <el-dropdown-item command="logout" divided>Logout</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
-
     </el-header>
     <el-container>
       <el-aside width="200px">
@@ -22,26 +21,25 @@
           <el-submenu :index="index+''" v-for="(item,index) in routes" v-if="item.hidden!=true" :key="index">
             <template slot="title">
               <i style="color: #2F86D2;margin-right: 8px" :class="item.iconCls"></i>
-              <span>{{item.name}}</span>
+              <span>{{ item.name }}</span>
             </template>
-              <el-menu-item :index="child.path" v-for="(child,indexj) in item.children" :key="indexj">{{child.name}}</el-menu-item>
+            <el-menu-item :index="child.path" v-for="(child,indexj) in item.children" :key="indexj">{{ child.name }}</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
       <el-main>
         <el-breadcrumb separator-class="el-icon-arrow-right" v-if="this.$router.currentRoute.path!='/home'">
-          <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/home' }">Home</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ this.$router.currentRoute.name }}</el-breadcrumb-item>
         </el-breadcrumb>
         <div class="homeWelcome" v-if="this.$router.currentRoute.path=='/home'">
-          欢迎来到微言聊天室管理端！
+          Welcome to the SubtleChat Room Management!
         </div>
         <router-view class="homeRouterView"/>
       </el-main>
     </el-container>
   </el-container>
 </template>
-
 <script>
   export default {
     name: "Home",
@@ -61,10 +59,10 @@
       },
       commandHandler(cmd){
         //注销登录操作
-        if (cmd=='logout'){
-          this.$confirm('此操作将注销登录, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+        if (cmd == 'logout'){
+          this.$confirm('This will log you out, continue?', 'Warning', {
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'warning'
           }).then(() => {
             this.getRequest("/admin/logout");
@@ -73,10 +71,10 @@
           }).catch(() => {
             this.$message({
               type: 'info',
-              message: '已取消操作'
+              message: 'Operation cancelled'
             });
           });
-        }else if (cmd=='userInfo'){
+        }else if (cmd == 'userInfo'){
           //this.$router.push('/hrinfo');
         }
       }
@@ -93,10 +91,11 @@
     padding:0px;
     box-sizing:border-box;
   }
-  .homeHeader .title{
+  .homeHeader .title,
+  .homeWelcome {
     font-size: 30px;
-    font-family: 华文行楷;
-    color:#ffffff;
+    font-family: "Segoe UI", Arial, sans-serif; /* Use a generic font-family */
+    color: #ffffff;
   }
   .homeHeader .choices{
     cursor: pointer;

@@ -76,12 +76,12 @@ const store =  new Vuex.Store({
      * @constructor
      */
     INIT_DATA (state) {
-        //同步数据库中的群聊数据
-        getRequest("/groupMsgContent/").then(resp=>{
-          if (resp){
-            Vue.set(state.sessions,'群聊',resp);
-          }
-        })
+      //同步数据库中的群聊数据
+      getRequest("/groupMsgContent/").then(resp=>{
+        if (resp){
+          Vue.set(state.sessions,'群聊',resp);
+        }
+      })
     },
     //保存系统所有用户
     INIT_USER(state,data){
@@ -95,7 +95,7 @@ const store =  new Vuex.Store({
         }
       })
     },
-   
+
 
   },
   actions:{
@@ -124,13 +124,13 @@ const store =  new Vuex.Store({
          */
         context.state.stomp.subscribe("/topic/notification",msg=>{
           //判断是否是系统广播通知
-            Notification.info({
-              title: '系统消息',
-              message: msg.body.substr(5),
-              position:"top-right"
-            });
-            //更新用户列表（的登录状态）
-            context.commit('GET_USERS');
+          Notification.info({
+            title: '系统消息',
+            message: msg.body.substr(5),
+            position:"top-right"
+          });
+          //更新用户列表（的登录状态）
+          context.commit('GET_USERS');
         });
         /**
          * 订阅群聊消息
@@ -192,10 +192,10 @@ const store =  new Vuex.Store({
     },
     //与Websocket服务端断开连接
     disconnect(context){
-     if (context.state.stomp!=null) {
-       context.state.stomp.disconnect();
-       console.log("关闭连接~");
-     }
+      if (context.state.stomp!=null) {
+        context.state.stomp.disconnect();
+        console.log("关闭连接~");
+      }
     },
   }
 })

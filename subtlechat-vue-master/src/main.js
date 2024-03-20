@@ -27,7 +27,7 @@ router.beforeEach((to,from,next)=>{
   if (to.path=="/"||to.path=="/adminlogin"){//首页不需要请求菜单
     next();
   }else if (to.path=="/home"&&!window.sessionStorage.getItem('admin')) {
-    ElementUI.Message.error({message:"不具有访问权限！"});
+    ElementUI.Message.error({message:"No access rights!"});
     next(from)
   }
   else{
@@ -35,7 +35,7 @@ router.beforeEach((to,from,next)=>{
       next();
     }else {//没登录就跳转到登陆页
       //如果先前写了请求路径（to中路径）则记录下来
-      ElementUI.Message.error({message:"请登录后访问！"});
+      ElementUI.Message.error({message:"Please login to access！"});
       next('/?redirect='+to.path);
     }
   }
@@ -49,3 +49,4 @@ new Vue({
   store,//这里需要注意
   render: h => h(App)
 }).$mount('#app')
+

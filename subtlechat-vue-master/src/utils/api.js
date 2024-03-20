@@ -6,32 +6,32 @@ import router from '../router'
 /*axios全局响应拦截*/
 axios.interceptors.response.use(success=>{
   if (success.status&&success.status==200&&success.data.status==500){//请求成功，但处理出现其他错误
-    Message.error({message:success.data.msg})
-    return;
+    Message.error({message: 'Login failed'})
+    return
   }
   //请求成功且服务器处理无错误
   if (success.data.msg){
-    Message.success({message:success.data.msg});
+    Message.success({message: 'Login successful'});
   }
   return success.data;
 },error => {
   if (error.response.status==504) {//	充当网关或代理的服务器，未及时从远端服务器获取请求
-    Message.error({message:'找不到服务器'})
+    Message.error({message:'Unable to find server'})
   }else if(error.response.status==403){	//服务器理解请求客户端的请求，但是拒绝执行此请求
-    Message.error({message:'权限不足，请联系管理员'})
+    Message.error({message:'Insufficient permissions, please contact the administrator'})
   }else if (error.response.status==401){//请求要求用户的身份认证
-    Message.error({message:'尚未登录，请登录'});
+    Message.error({message:'Not logged in yet, please log in'});
     router.replace("/");//跳转到登陆页
   }else if (error.response.status==404){
-    Message.error({message:'服务器无法根据客户端的请求找到资源'})
+    Message.error({message:'The server is unable to find resources based on the client\'s request'})
   } else if (error.response.status==500){
-    Message.error({message:'服务器内部错误，无法完成请求'})
+    Message.error({message:'Internal server error, unable to complete request'})
   } else {
     if (error.response.data){
       Message.error({message:error.response.data.msg})
     }
     else {
-      Message.error({message:'未知错误!'})
+      Message.error({message:'unknown error!'})
     }
   }
   return;

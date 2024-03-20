@@ -1,5 +1,6 @@
 <template>
   <div id="toolbar">
+    <!-- Image and Profile -->
     <el-image class="imgProfile"
               :src="user.userProfile"
               :preview-src-list="[user.userProfile]"
@@ -8,54 +9,66 @@
         <i class="el-icon-picture-outline"></i>
       </div>
     </el-image>
+    <!-- Button Bar -->
     <div id="btnBar">
       <div class="topBtnBar">
-        <el-tooltip  class="item" effect="dark" content="进入群聊" placement="right">
-        <el-button @click="chooseChatList('群聊')" class="toolBtn" size="small"><i class="fa fa-comments fa-2x" aria-hidden="true"></i></el-button>
+        <!-- Group Chat Button -->
+        <el-tooltip class="item" effect="dark" content="Enter Group Chat" placement="right">
+          <el-button @click="chooseChatList('Group Chat')" class="toolBtn" size="small">
+            <i class="fa fa-comments fa-2x" aria-hidden="true"></i>
+          </el-button>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="用户列表" placement="right">
-        <el-button @click="chooseChatList('私聊')" class="toolBtn" size="small"><i class="fa fa-address-book-o fa-2x" aria-hidden="true"></i></el-button>
+        <!-- User List Button -->
+        <el-tooltip class="item" effect="dark" content="User List" placement="right">
+          <el-button @click="chooseChatList('Private Chat')" class="toolBtn" size="small">
+            <i class="fa fa-address-book-o fa-2x" aria-hidden="true"></i>
+          </el-button>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="与机器人聊天" placement="right">
-          <el-button @click="chooseChatList('机器人')" class="toolBtn" size="small"><i class="fa fa-android fa-2x" aria-hidden="true"></i></el-button>
+        <!-- Chat with Bot Button -->
+        <el-tooltip class="item" effect="dark" content="Chat with Bot" placement="right">
+          <el-button @click="chooseChatList('Bot')" class="toolBtn" size="small">
+            <i class="fa fa-android fa-2x" aria-hidden="true"></i>
+          </el-button>
         </el-tooltip>
       </div>
       <div class="bottomBtnBar">
-        <el-tooltip class="item" effect="dark" content="个人中心" placement="right">
-          <el-button class="toolBtn" size="small"><i class="fa fa-user fa-2x" aria-hidden="true"></i></el-button>
+        <!-- User Center Button -->
+        <el-tooltip class="item" effect="dark" content="User Center" placement="right">
+          <el-button class="toolBtn" size="small">
+            <i class="fa fa-user fa-2x" aria-hidden="true"></i>
+          </el-button>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="更多" placement="right">
-          <el-popover
-                  placement="right"
-                  width="180"
-                  trigger="click"
-                  popper-class="moreListPopoverClass"
-                   >
+        <!-- More Options Button -->
+        <el-tooltip class="item" effect="dark" content="More" placement="right">
+          <el-popover placement="right" width="180" trigger="click" popper-class="moreListPopoverClass">
             <ul id="moreList">
-              <li @click="showFeedbackDialog" >意见反馈</li>
-              <li>举报</li>
-              <li @click="clearChatHistory">清空聊天记录</li>
+              <li @click="showFeedbackDialog">Feedback</li>
+              <li>Report</li>
+              <li @click="clearChatHistory">Clear Chat History</li>
             </ul>
-            <el-button slot="reference" class="toolBtn" size="small"><i class="fa fa-bars fa-2x" aria-hidden="true"></i></el-button>
+            <el-button slot="reference" class="toolBtn" size="small">
+              <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
+            </el-button>
           </el-popover>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="退出" placement="right">
-        <el-button @click="exitSystem" class="toolBtn" size="small"><i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></el-button>
+        <!-- Logout Button -->
+        <el-tooltip class="item" effect="dark" content="Logout" placement="right">
+          <el-button @click="exitSystem" class="toolBtn" size="small">
+            <i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
+          </el-button>
         </el-tooltip>
       </div>
     </div>
-    <el-dialog title="意见反馈" :visible.sync="feedBackDialogVisible" class="feedbackDialog">
-      <textarea class="feedbackInput" v-model="feedBackContent">
-
-      </textarea>
+    <!-- Feedback Dialog -->
+    <el-dialog title="Feedback" :visible.sync="feedBackDialogVisible" class="feedbackDialog">
+      <textarea class="feedbackInput" v-model="feedBackContent"></textarea>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleFeedbackSend">确 定</el-button>
-        <el-button @click="feedBackDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleFeedbackSend">Confirm</el-button>
+        <el-button @click="feedBackDialogVisible = false">Cancel</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
-
 <script>
   export default {
     name: "toolbar",
@@ -67,11 +80,11 @@
       }
     },
     methods:{
-      //退出系统
+      // Exiting the system
       exitSystem(){
-        this.$confirm('你是否要退出系统吗?', '系统提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('Are you sure you want to exit the system?', 'System Prompt', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
           this.getRequest("/logout");
@@ -86,7 +99,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消操作'
+            message: 'Operation cancelled'
           });
         });
       },
@@ -115,9 +128,9 @@
       },
       //清空聊天记录
       clearChatHistory(){
-        this.$confirm('此操作将永久删除本地聊天记录(群聊记录会在下次登录时恢复), 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('This action will permanently delete the local chat history (group chat history will be restored the next time you log in). Do you want to continue?', 'Tips', {
+          confirmButtonText: 'confirm',
+          cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
           //清除本地的localStorage中的聊天记录
@@ -132,12 +145,12 @@
           }
           this.$message({
             type: 'success',
-            message: '删除成功'
+            message: 'Successfully deleted'
           });
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: 'undeleted'
           });
         });
       }

@@ -37,29 +37,29 @@ Vue.use(VueRouter)
     },
     {
       path:'/home',
-      name:'用户管理',
+      name:'User management',
       component:Home,
       iconCls:"fa fa-user",
       children:[{
         path:'/userinfo',
-        name:'用户信息管理',
+        name:'User information management',
         component:UserInfo,
       }]
     },
     {
       path:'/home',
-      name:'聊天记录管理',
+      name:'Chat history management',
       iconCls:'fa fa-book',
       component:Home,
       children:[
         {
           path:'/groupChatRecord',
-          name:'群聊记录管理',
+          name:'Group chat record management',
           component:GroupChatRecord
         },
         {
           path:'/privateChatRecord',
-          name:'私聊记录管理',
+          name:'Private chat record management',
           component:PrivateChatRecord
         }
       ]

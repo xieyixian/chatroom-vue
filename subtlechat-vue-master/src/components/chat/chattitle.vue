@@ -1,6 +1,6 @@
 <template>
   <div class="chatTitle">
-    <span class="titleName">{{this.$store.state.currentSession.nickname?this.$store.state.currentSession.nickname:""}}</span>
+    <span class="titleName">Group chat</span>
     <el-button class="moreBtn" size="small" icon="el-icon-more"></el-button>
   </div>
 </template>

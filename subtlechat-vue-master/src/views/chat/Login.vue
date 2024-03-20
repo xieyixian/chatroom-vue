@@ -1,45 +1,45 @@
 <template>
   <el-container>
     <el-header >
-      <el-button @click="gotoAdminLogin" icon="el-icon-d-arrow-right" style="float: right;border: none" >管理端登录</el-button>
+      <el-button @click="gotoAdminLogin" icon="el-icon-d-arrow-right" style="float: right;border: none" >Admin Login</el-button>
     </el-header>
     <el-main>
       <div class="loginContainer">
         <el-form ref="loginForm" :rules="rules" :model="loginForm" label-width="80px">
-          <h3 class="loginTitle">微言SubtleChat~</h3>
-          <el-form-item label="用户名:" prop="username">
-            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="请输入用户名"></el-input>
+          <h3 class="loginTitle">SubtleChat~</h3>
+          <el-form-item label="Username:" prop="username">
+            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="Please enter your username"></el-input>
           </el-form-item>
-          <el-form-item label="密码:" prop="password">
-            <el-input type="password"  v-model="loginForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
+          <el-form-item label="Password:" prop="password">
+            <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="Please enter your password"></el-input>
           </el-form-item>
-          <el-form-item label="验证码:" prop="code">
-            <el-input type="text" @keydown.enter.native="submitLogin" v-model="loginForm.code" auto-complete="off" placeholder="请输入验证码" style="width:150px;"></el-input>
+          <el-form-item label="verify code:" prop="code">
+            <el-input type="text" @keydown.enter.native="submitLogin" v-model="loginForm.code" auto-complete="off" placeholder="Please enter the verification code" style="width:150px;"></el-input>
             <img :src="verifyCode" title="点击切换验证码" @click="changeverifyCode" />
           </el-form-item>
-          <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> 记住我一周</span>
+          <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> Remember me for a week</span>
           <div>
-            <el-button @click="showRegistryDialog" style="width:45% ;margin-right: 15px">注册</el-button>
-            <el-button type="primary" style="width:45% ;" @click="submitLogin"  v-loading.fullscreen.lock="fullscreenLoading">登录</el-button>
+            <el-button @click="showRegistryDialog" style="width:45% ;margin-right: 15px">Register</el-button>
+            <el-button type="primary" style="width:45% ;" @click="submitLogin" v-loading.fullscreen.lock="fullscreenLoading">Log In</el-button>
           </div>
         </el-form>
       </div>
     </el-main>
-    <el-dialog title="新用户注册" :before-close="closeRegisterDialog" :visible.sync="registerDialogVisible" width="30%">
+    <el-dialog title="New user registration" :before-close="closeRegisterDialog" :visible.sync="registerDialogVisible" width="30%">
       <el-form :model="registerForm" status-icon :rules="registerRules" ref="registerForm" >
-        <el-form-item label="用户昵称：" :label-width="formLabelWidth" prop="nickname">
+        <el-form-item label="Nickname:" :label-width="formLabelWidth" prop="nickname">
           <el-input v-model=" registerForm.nickname" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录用户名：" :label-width="formLabelWidth" prop="username">
+        <el-form-item label="username：" :label-width="formLabelWidth" prop="username">
             <el-input v-model="registerForm.username" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码：" :label-width="formLabelWidth" prop="password">
+        <el-form-item label="password：" :label-width="formLabelWidth" prop="password">
           <el-input type="password" v-model="registerForm.password" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="确认密码：" :label-width="formLabelWidth" prop="checkPass">
+        <el-form-item label="Confirm ：" :label-width="formLabelWidth" prop="checkPass">
           <el-input type="password" v-model="registerForm.checkPass" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户头像：" :label-width="formLabelWidth">
+        <el-form-item label="profile photo：" :label-width="formLabelWidth">
           <el-upload
                   action="/ossFileUpload?module=group-chat"
                   ref="upload"
@@ -53,12 +53,12 @@
                   :on-remove="imgRemove"
                   >
             <i  class="el-icon-plus"></i>
-            <div slot="tip" class="el-upload__tip">只能上传不超过4MB的图片(可使用默认头像！)</div>
+            <div slot="tip" class="el-upload__tip">Images must be under 4MB (You can use the default avatar!)</div>
           </el-upload>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitRegisterForm('registerForm') " style="width: 100%">注册</el-button>
+        <el-button type="primary" @click="submitRegisterForm('registerForm') " style="width: 100%">Register</el-button>
       </div>
     </el-dialog>
   </el-container>
@@ -73,12 +73,12 @@
     data(){
       var validateNickname = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入昵称'));
+          callback(new Error('Please enter a nickname'));
         }
         //检查昵称是否重复
           this.getRequest("user/checkNickname?nickname="+value).then(resp=>{
             if (resp!=0){
-              callback(new Error("该昵称已被注册"))
+              callback(new Error("The nickname has been registered"))
             } else {
               callback();
             }
@@ -86,12 +86,12 @@
       };
       var validateUsername = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入用户名'));
+          callback(new Error('Please enter your username'));
         }
         //检查用户名是否重复
         this.getRequest("/user/checkUsername?username="+value).then(resp=>{
             if (resp!=0){
-              callback(new Error('该用户名已被注册'));
+              callback(new Error('The user name has been registered'));
             }
             else {
               callback();
@@ -101,7 +101,7 @@
       };
       var validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('Please enter password'));
         } else {
           if (this.registerForm.checkPass !== '') {
             this.$refs.registerForm.validateField('checkPass');
@@ -111,9 +111,9 @@
       };
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请再次输入密码'));
+          callback(new Error('Please re-enter your password'));
         } else if (value !== this.registerForm.password) {
-          callback(new Error('两次输入密码不一致!'));
+          callback(new Error('Passwords do not match!'));
         } else {
           callback();
         }
@@ -127,9 +127,9 @@
         verifyCode:'/verifyCode',
         checked:true,
         rules: {
-          username:[{required:true,message:'请输入用户名',trigger:'blur'}],
-          password:[{required:true,message: '请输入密码',trigger:'blur'}],
-          code:[{required:true,message: '请输入验证码',trigger:'blur'}]
+          username:[{required:true,message:'Please enter your username',trigger:'blur'}],
+          password:[{required:true,message: 'Please enter password',trigger:'blur'}],
+          code:[{required:true,message: 'Please enter the verification code',trigger:'blur'}]
         },
         fullscreenLoading:false,
         //注册表单相关
@@ -182,7 +182,7 @@
               }
             })
           } else {
-            this.$message.error("用户名,密码和验证码都不能为空！");
+            this.$message.error("Username, password and verification code can not be empty!");
             return false;
           }
         });
@@ -204,7 +204,7 @@
         let isLt4M = file.size / 1024 / 1024 < 4;
 
         if (!isLt4M) {
-          this.$message.error('上传头像图片大小不能超过 4MB!');
+          this.$message.error('Upload profile picture size can not exceed 4MB!');
         }
         return isLt4M;
       },
@@ -216,11 +216,11 @@
       imgSuccess(response, file, fileList) {
         this.uploadDisabled = true;
         this.registerForm.userProfile=response;//将返回的路径给表单的头像属性
-        console.log("图片url为："+this.registerForm.userProfile);
+        console.log("Image url is："+this.registerForm.userProfile);
       },
       // 图片上传失败
       imgError(err, file, fileList){
-        this.$message.error("上传失败");
+        this.$message.error("Upload failure");
         this.uploadDisabled = false;
       },
       //移除图片
@@ -249,7 +249,7 @@
               }
             })
           } else {
-            this.$message.error("请正确填写信息！");
+            this.$message.error("Please fill in the information correctly!");
             console.log('error submit!!');
             return false;
           }

@@ -9,21 +9,21 @@
           <i class="fa fa-smile-o" aria-hidden="true"></i>
         </el-button>
       </el-popover>
-    <el-upload
-            class="upload-btn"
-            action="/ossFileUpload?module=group-chat"
-            :before-upload="beforeAvatarUpload"
-            :on-success="imgSuccess"
-            :on-error="imgError"
-            :show-file-list="false"
-            accept=".jpg,.jpeg,.png,.JPG,JPEG,.PNG,.gif,.GIF"
-            >
-      <el-button id="uploadImgBtn" icon="el-icon-picture-outline"></el-button>
-    </el-upload>
+      <el-upload
+          class="upload-btn"
+          action="/ossFileUpload?module=group-chat"
+          :before-upload="beforeAvatarUpload"
+          :on-success="imgSuccess"
+          :on-error="imgError"
+          :show-file-list="false"
+          accept=".jpg,.jpeg,.png,.JPG,JPEG,.PNG,.gif,.GIF"
+      >
+        <el-button id="uploadImgBtn" icon="el-icon-picture-outline"></el-button>
+      </el-upload>
     </div>
-    <textarea id="textarea" placeholder="按 Ctrl + Enter 发送" v-model="content" v-on:keyup="addMessage">
+    <textarea id="textarea" placeholder="Press Ctrl+Enter to send" v-model="content" v-on:keyup="addMessage">
     </textarea>
-    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick" >发送(S)</el-button>
+    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick" >Send(S)</el-button>
   </div>
 </template>
 
@@ -53,7 +53,7 @@ export default {
       if(!this.content || this.content.match(/^[ ]*$/)) {
         this.$message({
           showClose: true,
-          message: '不能发送空白信息'
+          message: 'Cannot send blank messages'
         });
         return;
       }
@@ -95,11 +95,11 @@ export default {
       //清空输入框
       this.content='';
     },
-  	addMessage (e) {
-  		if (e.ctrlKey && e.keyCode ===13 && this.content.length) {
-  		   this.addMessageByClick();
-  		}
-  	},
+    addMessage (e) {
+      if (e.ctrlKey && e.keyCode ===13 && this.content.length) {
+        this.addMessageByClick();
+      }
+    },
     /**
      *       图片上传的方法
      */
@@ -119,9 +119,9 @@ export default {
       let imgType=file.name.substring(file.name.lastIndexOf(".")+1);
       imgType=imgType.toLowerCase();
       let isImg=imgType==='jpg'|| imgType==='png'|| imgType==='jpeg'||imgType==='gif';
-       if (!isImg){
-         this.$message.error('上传图片格式不符合要求！');
-       }
+      if (!isImg){
+        this.$message.error('上传图片格式不符合要求！');
+      }
       return isLt1M&&isImg;
     },
     // 图片上传成功
@@ -176,19 +176,19 @@ export default {
 
 
 <style lang="scss">
-  /* el-popover是和app同级的，所以scoped的局部属性设置无效 */
-  /* 需要设置全局style */
-  .el-popover{
-    height:200px;
-    width:450px;
-    overflow: scroll;
-    overflow-x:auto;
-  }
+/* el-popover是和app同级的，所以scoped的局部属性设置无效 */
+/* 需要设置全局style */
+.el-popover{
+  height:200px;
+  width:450px;
+  overflow: scroll;
+  overflow-x:auto;
+}
 </style>
 
 <style lang="scss" scoped>
 #uesrtext {
-	position: absolute;
+  position: absolute;
   bottom: 0;
   right: 0;
   width: 100%;
@@ -196,11 +196,11 @@ export default {
   border: solid 1px #DDD;
   background-color: white;
   > textarea {
-  	padding: 10px;
-  	width: 95%;
-  	height: 58%;
-  	border: none;
-  	outline: none;
+    padding: 10px;
+    width: 95%;
+    height: 58%;
+    border: none;
+    outline: none;
     resize: none;//禁止拉伸
   }
   #sendBtn{

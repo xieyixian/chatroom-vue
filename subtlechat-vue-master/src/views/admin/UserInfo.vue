@@ -1,103 +1,103 @@
 <template>
-<div>
   <div>
-    用户账号状态选择：
-    <el-select v-model="stateValue" placeholder="请选择">
-      <el-option
-              v-for="item in stateOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-      </el-option>
-    </el-select>
-    <el-input placeholder="输入用户昵称进行搜索"
-              prefix-icon="el-icon-search"
-              style="width: 200px;margin: 0 10px"
-               v-model="nameKeyword"></el-input>
-    <el-button @click="initUserData" icon="el-icon-search" type="primary">搜索</el-button>
-    <el-button @click="refreshTable" icon="el-icon-refresh" type="primary">刷新表格</el-button>
-  </div>
-  <div style="margin-top: 20px;width: 1000px">
-    <el-table
-            :data="userData"
-            stripe
-            border
-            v-loading="loading"
-            @selection-change="handleSelectionChange"
-            style="width: 100%">
-      <el-table-column
-              type="selection"
-              width="55">
-      </el-table-column>
-      <el-table-column
-              prop="id"
-              label="编号"
-              width="80">
-      </el-table-column>
-      <el-table-column
-              prop="username"
-              label="用户名"
-              width="180">
-      </el-table-column>
-      <el-table-column
-              prop="nickname"
-              label="昵称"
-              width="180">
-      </el-table-column>
-      <el-table-column
-              label="用户头像"
-               width="100">
-        <template slot-scope="scope">
-          <el-image :src="scope.row.userProfile"
-                    :preview-src-list="[scope.row.userProfile]"
-                    style="width: 50px;height: 50px">
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </template>
-      </el-table-column>
-      <el-table-column
-              label="是否锁定该账户"
-               width="200">
-        <template slot-scope="scope">
-        <el-switch
+    <div>
+      User Account Status Selection:
+      <el-select v-model="stateValue" placeholder="Please select">
+        <el-option
+            v-for="item in stateOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+        </el-option>
+      </el-select>
+      <el-input placeholder="Enter user nickname to search"
+                prefix-icon="el-icon-search"
+                style="width: 200px;margin: 0 10px"
+                v-model="nameKeyword"></el-input>
+      <el-button @click="initUserData" icon="el-icon-search" type="primary">Search</el-button>
+      <el-button @click="refreshTable" icon="el-icon-refresh" type="primary">Refresh Table</el-button>
+    </div>
+    <div style="margin-top: 20px;width: 1000px">
+      <el-table
+          :data="userData"
+          stripe
+          border
+          v-loading="loading"
+          @selection-change="handleSelectionChange"
+          style="width: 100%">
+        <el-table-column
+            type="selection"
+            width="55">
+        </el-table-column>
+        <el-table-column
+            prop="id"
+            label="ID"
+            width="80">
+        </el-table-column>
+        <el-table-column
+            prop="username"
+            label="Username"
+            width="180">
+        </el-table-column>
+        <el-table-column
+            prop="nickname"
+            label="Nickname"
+            width="180">
+        </el-table-column>
+        <el-table-column
+            label="User Avatar"
+            width="100">
+          <template slot-scope="scope">
+            <el-image :src="scope.row.userProfile"
+                      :preview-src-list="[scope.row.userProfile]"
+                      style="width: 50px;height: 50px">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </template>
+        </el-table-column>
+        <el-table-column
+            label="Lock this account?"
+            width="200">
+          <template slot-scope="scope">
+            <el-switch
                 v-model="scope.row.accountNonLocked"
                 @change="changeLockedStatus(scope.row)"
-                active-text="未锁定"
-                inactive-text="锁定"
+                active-text="Unlocked"
+                inactive-text="Locked"
                 active-color="#13ce66"
                 inactive-color="#ff4949">
-        </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button
-                  size="mini"
-                  @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div style="display: flex;justify-content: space-between;margin-top: 10px">
-      <el-button @click="handleMultiDelete" :disabled="multipleSelection.length==0?true:false" type="danger" icon="el-icon-delete">批量删除</el-button>
-      <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :page-sizes="[10, 20, 30, 40]"
-              :page-size="10"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-              style="display: inline-block">
-      </el-pagination>
-    </div>
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="Action">
+          <template slot-scope="scope">
+            <el-button
+                size="mini"
+                @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+            <el-button
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.row)">Delete</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="display: flex;justify-content: space-between;margin-top: 10px">
+        <el-button @click="handleMultiDelete" :disabled="multipleSelection.length==0?true:false" type="danger" icon="el-icon-delete">Delete in Batch</el-button>
+        <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="10"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            style="display: inline-block">
+        </el-pagination>
+      </div>
 
+    </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -108,15 +108,15 @@
         stateValue:-1,//默认用户状态
         stateOptions:[
           {
-            label:'请选择',
+            label:'Please Select',
             value:-1
           },
           {
-            label:'未锁定',
+            label:'Unlocked',
             value:0
           },
           {
-            label:'已锁定',
+            label:'Locked',
             value:1
           }
         ],
@@ -179,9 +179,9 @@
   },
   //删除单个用户
       handleDelete(data){
-        this.$confirm('此操作将永久删除用户【'+data.nickname+'】, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('This operation will permanently delete the user【'+data.nickname+'】, Whether to continue?', 'Tips', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
           this.deleteRequest("/user/"+data.id).then(resp=>{
@@ -193,7 +193,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: 'undeleted'
           });
         });
       },
@@ -203,9 +203,9 @@
       },
       //处理批量删除用户
       handleMultiDelete(){
-        this.$confirm('此操作将永久删除【'+this.multipleSelection.length+'】个用户, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('This operation will permanently delete【'+this.multipleSelection.length+'】Users, Do you want to continue?', 'prompt', {
+          confirmButtonText: 'confirm',
+          cancelButtonText: 'cancel',
           type: 'warning'
         }).then(() => {
           let url="/user/?";
@@ -220,7 +220,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: 'Cancelled deletion'
           });
         });
 

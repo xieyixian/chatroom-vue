@@ -1,100 +1,100 @@
 <template>
-<div>
   <div>
-    发送者昵称：<el-input v-model="nameKeyword" placeholder="输入发送者昵称" class="nameInput"></el-input>
-    发送时间：
-    <el-date-picker
+    <div>
+      Sender Nickname: <el-input v-model="nameKeyword" placeholder="Enter sender nickname" class="name-input"></el-input>
+      Send Time:
+      <el-date-picker
           v-model="dateScope"
           type="datetimerange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          range-separator="to"
+          start-placeholder="Start date"
+          end-placeholder="End date"
           :editable="false"
           :unlink-panels="true"
           value-format="yyyy-MM-dd HH:mm:ss"
-          class="topControlsBar">
-  </el-date-picker>
-    消息类型：
-    <el-radio-group v-model="msgTypeRadio" class="topControlsBar">
-      <el-radio :label="1">文本</el-radio>
-      <el-radio :label="2">图片</el-radio>
-      <el-radio :label="3">文件</el-radio>
-    </el-radio-group>
-    <el-button @click="initMessTableData" icon="el-icon-search" type="primary" size="small" class="topControlsBar">搜索</el-button>
-    <el-button @click="refreshMessTableData" icon="el-icon-refresh" type="primary" size="small" class="topControlsBar">刷新表格</el-button>
-    <el-button @click="exportData" icon="el-icon-document" type="success" size="small" class="topControlsBar">导出Excel</el-button>
-  </div>
-  <div style="margin-top: 15px">
-    <el-table
-            :data="messTableData"
-            v-loading="loading"
-            border
-            stripe
-            @selection-change="handleSelectionChange"
-            style="width: 100%">
-      <el-table-column
-              type="selection"
-              width="55">
-      </el-table-column>
-      <el-table-column
-              prop="id"
-              label="消息编号"
-              width="80">
-      </el-table-column>
-      <el-table-column
-              prop="fromId"
-              label="发送者编号"
-              width="100">
-      </el-table-column>
-      <el-table-column
-              prop="fromName"
-              label="发送者昵称"
-              width="150">
-      </el-table-column>
-      <el-table-column
-              prop="createTime"
-              label="发送时间"
-              width="180">
-      </el-table-column>
-      <el-table-column
-              label="内容"
-              width="750">
-        <template slot-scope="scope">
-          <div v-if="scope.row.messageTypeId==1" v-html="scope.row.content"></div>
-          <div v-else>
-            <el-image :src="scope.row.content"
-                      :preview-src-list="[scope.row.content]"
-                      style="width: 50px;height: 50px">
-              <div slot="error" class="image-slot">
-                <i class="el-icon-picture-outline"></i>
-              </div>
-            </el-image>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
-  <div style="display: flex;justify-content: space-between;margin-top: 10px">
-    <el-button @click="handleMultiDelete" :disabled="multipleSelection.length==0?true:false" type="danger" icon="el-icon-delete">批量删除</el-button>
-    <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :page-sizes="[10, 20, 30, 40]"
-            :page-size="10"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            style="display: inline-block">
-    </el-pagination>
+          class="top-controls-bar">
+      </el-date-picker>
+      Message Type:
+      <el-radio-group v-model="msgTypeRadio" class="top-controls-bar">
+        <el-radio :label="1">Text</el-radio>
+        <el-radio :label="2">Image</el-radio>
+        <el-radio :label="3">File</el-radio>
+      </el-radio-group>
+      <el-button @click="initMessTableData" icon="el-icon-search" type="primary" size="small" class="top-controls-bar">Search</el-button>
+      <el-button @click="refreshMessTableData" icon="el-icon-refresh" type="primary" size="small" class="top-controls-bar">Refresh Table</el-button>
+      <el-button @click="exportData" icon="el-icon-document" type="success" size="small" class="top-controls-bar">Export to Excel</el-button>
     </div>
-</div>
+    <div style="margin-top: 15px">
+      <el-table
+          :data="messTableData"
+          v-loading="loading"
+          border
+          stripe
+          @selection-change="handleSelectionChange"
+          style="width: 100%">
+        <el-table-column
+            type="selection"
+            width="55">
+        </el-table-column>
+        <el-table-column
+            prop="id"
+            label="Message ID"
+            width="80">
+        </el-table-column>
+        <el-table-column
+            prop="fromId"
+            label="Sender ID"
+            width="100">
+        </el-table-column>
+        <el-table-column
+            prop="fromName"
+            label="Sender Nickname"
+            width="150">
+        </el-table-column>
+        <el-table-column
+            prop="createTime"
+            label="Send Time"
+            width="180">
+        </el-table-column>
+        <el-table-column
+            label="Content"
+            width="750">
+          <template slot-scope="scope">
+            <div v-if="scope.row.messageTypeId==1" v-html="scope.row.content"></div>
+            <div v-else>
+              <el-image :src="scope.row.content"
+                        :preview-src-list="[scope.row.content]"
+                        style="width: 50px;height: 50px">
+                <div slot="error" class="image-slot">
+                  <i class="el-icon-picture-outline"></i>
+                </div>
+              </el-image>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="Action">
+          <template slot-scope="scope">
+            <el-button
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.row)">Delete</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-top: 10px">
+      <el-button @click="handleMultiDelete" :disabled="multipleSelection.length==0?true:false" type="danger" icon="el-icon-delete">Delete in Batch</el-button>
+      <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :page-sizes="[10, 20, 30, 40]"
+          :page-size="10"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          style="display: inline-block">
+      </el-pagination>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -163,9 +163,9 @@
       },
       //单条数据删除
       handleDelete(data){
-        this.$confirm('此操作将永久删除该条消息记录, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('This operation will permanently delete the message record. Do you want to continue?', 'Tips', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
           //点击确定后即执行
@@ -178,15 +178,15 @@
           //点击了取消
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: 'undeleted'
           });
         });
       },
       //批量删除数据
       handleMultiDelete(){
-        this.$confirm('此操作将永久删除【'+this.multipleSelection.length+'】条记录, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$confirm('This operation will be permanently deleted【'+this.multipleSelection.length+'】 records, whether to continue?', 'Tips', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
           let url="/groupMsgContent/?";
@@ -201,7 +201,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+              message: 'undeleted'
           });
         });
       }
