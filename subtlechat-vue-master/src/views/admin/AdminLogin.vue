@@ -14,8 +14,8 @@
             <el-input type="password"  v-model="loginForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
           </el-form-item>
           <el-form-item label="验证码:" prop="mailCode">
-<!--             <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="请输入验证码" style="width: 120px;margin-right: 10px" ></el-input>           -->
-            <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="无需填入验证码" style="width: 120px;margin-right: 10px" ></el-input>
+             <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="请输入验证码" style="width: 120px;margin-right: 10px" ></el-input>
+<!--            <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="无需填入验证码" style="width: 120px;margin-right: 10px" ></el-input>-->
              <el-button @click="getMailVerifyCode" :disabled="getCodeEnable"  size="mini">{{getCodeBtnText}}</el-button>
           </el-form-item>
           <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> 记住我一周</span>
@@ -27,7 +27,8 @@
 </template>
 
 <script>
-
+import JSEncrypt from 'jsencrypt';
+import axios from 'axios';
   export default {
     name: "Login",
     data(){
@@ -49,11 +50,50 @@
         getCodeBtnText:'获取邮箱验证码',
       }
     },
+    created() {
+
+      axios.get('/getPublicKey')
+          .then(response => {
+            const responseData = response;
+            //console.log(responseData)
+            sessionStorage.setItem('publicKey', JSON.stringify(responseData));
+          })
+    },
     methods:{
+      encryptData() {
+        const encryptor = new JSEncrypt();
+        let storedKey = sessionStorage.getItem('publicKey');
+        storedKey = storedKey.substring(1, storedKey.length - 1);
+        console.log(storedKey);
+        encryptor.setPublicKey(storedKey);
+
+        this.loginForm.username = encryptor.encrypt(this.loginForm.username);
+        this.loginForm.password = encryptor.encrypt(this.loginForm.password);
+      },
+      decryptData(obj) {
+        const decryptor = new JSEncrypt();
+        let storedKey = sessionStorage.getItem('publicKey');
+        storedKey = storedKey.substring(1, storedKey.length - 1);
+        console.log(storedKey);
+
+        decryptor.setPublicKey(storedKey);
+
+        let decryptedObj = { ...obj };
+
+        if (decryptedObj.username) {
+          decryptedObj.username = decryptor.decrypt(decryptedObj.username);
+        }
+        if (decryptedObj.email) {
+          decryptedObj.email = decryptor.decrypt(decryptedObj.email);
+        }
+        return decryptedObj;
+      },
+
       submitLogin(){
         this.$refs.loginForm.validate((valid) => {
           if (valid) {
             this.fullscreenLoading=true;
+            this.encryptData();
             this.postKeyValueRequest('/admin/doLogin',this.loginForm).then(resp=>{
               setTimeout(()=>{
                 this.fullscreenLoading=false;
@@ -61,8 +101,14 @@
               if (resp){
                 //alert("登录成功！");
                  //保存登录用户到session中
+                resp.obj=this.decryptData(resp.obj);
                  window.sessionStorage.setItem("admin",JSON.stringify(resp.obj));
                  this.$router.replace("/home");
+              }
+              else{
+                this.loginForm.username='';
+                this.loginForm.password='';
+                this.loginForm.mailCode='';
               }
             })
           } else {
@@ -76,7 +122,10 @@
       },
       //获取邮箱验证码
       getMailVerifyCode(){
-        this.getRequest("/admin/mailVerifyCode").then(resp=>{
+        const adminUsername = this.loginForm.username;
+        window.sessionStorage.setItem('adminUsername', adminUsername);
+
+        this.postRequest("/admin/mailVerifyCode", {username: adminUsername}).then(resp=>{
           if (resp){
             this.getCodeEnable=true;
             //30s内不得再次发送

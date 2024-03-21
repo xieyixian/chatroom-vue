@@ -7,6 +7,7 @@ import Home from '../views/admin/Home'
 import UserInfo from '../views/admin/UserInfo'
 import GroupChatRecord from '../views/admin/GroupChatRecord'
 import PrivateChatRecord from '../views/admin/PrivateChatRecord'
+import mailLogin from '../views/chat/mailLogin'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,12 @@ Vue.use(VueRouter)
       path:'/home',
       name:'Home',
       component:Home,
+      hidden:true
+    },
+    {
+      path:'/mailLogin',
+      name:'mailLogin',
+      component:mailLogin,
       hidden:true
     },
     {
