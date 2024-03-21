@@ -87,7 +87,8 @@
     </div>
     <textarea id="textarea" placeholder="按 Ctrl + Enter 发送" v-model="content" v-on:keyup="addMessage">
     </textarea>
-    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick" >发送(S)</el-button>
+    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(0)" >发送(S)</el-button>
+    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(1)" >限时消息</el-button>
   </div>
 </template>
 
@@ -117,7 +118,7 @@ export default {
     'currentSession'
   ]),
   methods: {
-    addMessageByClick(){
+    addMessageByClick(val){
       if(!this.content || this.content.match(/^[ ]*$/)) {
         this.$message({
           showClose: true,
@@ -146,6 +147,7 @@ export default {
       //发送群聊消息
       if (this.currentSession.username=="群聊"){
         console.log(this.content);
+        msgObj.type = val
         msgObj.fromId = this.$store.state.currentUser.id;
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
       }
@@ -167,6 +169,7 @@ export default {
         msgObj.conversation=this.$store.state.conversation;
         msgObj.conversationId=this.$store.state.conversation.conversationId;
         msgObj.to=this.currentSession.username;
+        msgObj.biaoji=val
         this.$store.state.stomp.send("/ws/chat",{},JSON.stringify(msgObj));
         //提交私聊消息记录
         this.$store.commit('addMessage',msgObj);
@@ -219,7 +222,7 @@ export default {
         msgObj.fromId = this.$store.state.currentUser.id;
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
         this.$store.commit('addMessage',msgObj);
-       
+
       }else {
         msgObj.from=this.$store.state.currentUser.username;
         msgObj.fromNickname=this.$store.state.currentUser.nickname;
