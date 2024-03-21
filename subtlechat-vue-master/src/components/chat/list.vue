@@ -83,10 +83,14 @@ export default {
   initPrivateChat(currentSession) {
       // 构建请求的payload，通常JSON的属性名使用小写
       const payload = {
-        username: this.user.username, // 当前登录用户的用户名
+        username: this.$store.state.currentUser.username, // 当前登录用户的用户名
         otherUsername: currentSession.username // 选择进行私聊的用户的用户名
       };
-
+	  
+	  console.log("aaaaaaaaaaacccccc:", this.$store.state.currentUser);
+	   console.log("aaaaaaaaaaacccccc:", this.user.username);
+	  console.log("aaaaaaaaaaacccccc:", this.user.username);
+	  console.log("aaaaaaaaaaacccccc:", currentSession.username);
       // 发送POST请求
       this.postRequest("/userchat/conversations/join", payload)
         .then(response => {

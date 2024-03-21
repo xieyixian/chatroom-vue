@@ -211,14 +211,24 @@ export default {
       console.log("图片url为："+response);
       let msgObj=new Object();
       msgObj.content=response;
+      msgObj.messageText=response;
       //设置消息类型为图片
       msgObj.messageTypeId=2;
+      console.log("123123123123123",msgObj);
       if (this.currentSession.username=="群聊"){
+        msgObj.fromId = this.$store.state.currentUser.id;
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
+        this.$store.commit('addMessage',msgObj);
+       
       }else {
         msgObj.from=this.$store.state.currentUser.username;
         msgObj.fromNickname=this.$store.state.currentUser.nickname;
+        msgObj.senderUsername=this.$store.state.currentUser.username;
+        msgObj.senderUser=this.$store.state.currentUser;
+        msgObj.conversation=this.$store.state.conversation;
+        msgObj.conversationId=this.$store.state.conversation.conversationId;
         msgObj.to=this.currentSession.username;
+        console.log("123123123123123",msgObj);
         this.$store.state.stomp.send("/ws/chat",{},JSON.stringify(msgObj));
         //提交私聊消息记录
         this.$store.commit('addMessage',msgObj);
