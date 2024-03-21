@@ -26,7 +26,8 @@ to：去哪，from：从哪来，调用next()：通过本次路由请求*/
 router.beforeEach((to,from,next)=>{
   if (to.path=="/"||to.path=="/adminlogin"){//首页不需要请求菜单
     next();
-  }else if (to.path=="/home"&&!window.sessionStorage.getItem('admin')) {
+  }else if (to.path=="/"||to.path=="/mailLogin"){next();}
+  else if (to.path=="/home"&&!window.sessionStorage.getItem('admin')) {
     ElementUI.Message.error({message:"不具有访问权限！"});
     next(from)
   }
