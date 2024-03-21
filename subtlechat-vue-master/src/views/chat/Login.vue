@@ -248,17 +248,21 @@ import axios from 'axios';
                 this.fullscreenLoading=false;
               },1000);
               if (resp){
+                //保存当前用户到vuex
+                console.log("6666666666666666aaaaaaaaaaacccccc:", resp.obj.user);
+                this.$store.state.currentUser=resp.obj.user;
+                //保存登录用户到sessionStorage中
+                console.log('11111111111111111111111111',resp)
+                window.sessionStorage.setItem("user",JSON.stringify(resp.obj.user));
+                console.log('11111111111111111111111111', window.sessionStorage.getItem("user"))
+                //let path=this.$route.query.redirect;
+               // this.$router.replace((path=='/'||path==undefined)?"/chatroom":path);
 
-                resp.obj=this.decryptData(resp.obj);
+                //resp.obj=this.decryptData(resp.obj);
                 sessionStorage.setItem("encryptedPassword",this.loginForm.password)
                 sessionStorage.setItem("code",this.loginForm.code)
                 this.$router.replace("/mailLogin");
-                // //保存当前用户到vuex
-                // this.$store.state.currentUser=resp.obj;
-                // //保存登录用户到sessionStorage中
-                // window.sessionStorage.setItem("user",JSON.stringify(resp.obj));
-                // let path=this.$route.query.redirect;
-                // this.$router.replace((path=='/'||path==undefined)?"/chatroom":path);
+              
               }else {
                 this.loginForm.username='';
                 this.loginForm.password='';
