@@ -41,7 +41,7 @@
         </el-form-item>
         <el-form-item label="用户头像：" :label-width="formLabelWidth">
           <el-upload
-                  action="/ossFileUpload?module=group-chat"
+                  action="/file"
                   ref="upload"
                   list-type="picture-card"
                   :class="{disabled:uploadDisabled}"
@@ -56,6 +56,14 @@
             <div slot="tip" class="el-upload__tip">只能上传不超过4MB的图片(可使用默认头像！)</div>
           </el-upload>
         </el-form-item>
+        <el-form-item label="邮箱地址:" prop="email">
+          <el-input type="text"  v-model="registerForm.email" auto-complete="off" placeholder="请输入邮箱" style="width: 120px;margin-right: 10px" ></el-input>
+          <el-button @click="getMailVerifyCode" :disabled="getCodeEnable"  size="mini">{{getCodeBtnText}}</el-button>
+        </el-form-item>
+
+        <el-form-item label="验证码:" prop="mailCode">
+          <el-input type="text"  v-model="registerForm.mailCode" auto-complete="off" placeholder="请输入验证码" style="width: 120px;margin-right: 10px" ></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitRegisterForm('registerForm') " style="width: 100%">注册</el-button>
@@ -67,7 +75,8 @@
 </template>
 
 <script>
-
+import JSEncrypt from 'jsencrypt';
+import axios from 'axios';
   export default {
     name: "Login",
     data(){
@@ -122,24 +131,31 @@
         loginForm:{
            username:'',
            password:'',
-           code:''
+           code:'',
+           type:'login',
         },
         verifyCode:'/verifyCode',
         checked:true,
         rules: {
           username:[{required:true,message:'请输入用户名',trigger:'blur'}],
           password:[{required:true,message: '请输入密码',trigger:'blur'}],
-          code:[{required:true,message: '请输入验证码',trigger:'blur'}]
+          code:[{required:true,message: '请输入验证码',trigger:'blur'}],
+          email:[{required:true,message: '请输入邮箱',trigger:'blur'}],
+          mailCode:[{required:true,message: '请输入验证码',trigger:'blur'}]
         },
         fullscreenLoading:false,
         //注册表单相关
         registerDialogVisible:false,
+        getCodeBtnText:'获取邮箱验证码',
+        getCodeEnable:false,
         formLabelWidth: '120px',
         registerForm:{
           nickname:'',
           username:'',
           password:'',
           checkPass:'',
+          email:'',
+          mailCode:'',
           userProfile:'default_head.jpg',
         },
         registerRules: {
@@ -161,23 +177,91 @@
         fileList:[],
       };
     },
+    created() {
+      // 假设 this.item 是需要存储的数据
+
+      axios.get('/getPublicKey')
+          .then(response => {
+            const responseData = response;
+            console.log("Receive public key: " + responseData)
+            // 将数据存储到 session 中
+            sessionStorage.setItem('publicKey', JSON.stringify(responseData));
+          })
+    },
     methods:{
+
+        encryptData() {
+          const encryptor = new JSEncrypt();
+          let storedKey = sessionStorage.getItem('publicKey');
+          storedKey = storedKey.substring(1, storedKey.length - 1);
+          encryptor.setPublicKey(storedKey);
+
+          sessionStorage.setItem("encryptedUsername",this.loginForm.username);
+          // 加密数据
+          this.loginForm.username = encryptor.encrypt(this.loginForm.username);
+          this.loginForm.password = encryptor.encrypt(this.loginForm.password);
+          console.log("Data is Encrypted, the data is: " + this.loginForm.username+" and "+ this.loginForm.password);
+        },
+
+
+        encryptData_register() {
+          const encryptor = new JSEncrypt();
+
+          let storedKey = sessionStorage.getItem('publicKey');
+          storedKey = storedKey.substring(1, storedKey.length - 1);;
+          encryptor.setPublicKey(storedKey);
+
+          this.registerForm.username = encryptor.encrypt(this.registerForm.username);
+          this.registerForm.password = encryptor.encrypt(this.registerForm.password);
+
+        },
+        decryptData(obj) {
+
+          const decryptor = new JSEncrypt();
+
+          let storedKey = sessionStorage.getItem('publicKey');
+
+          storedKey = storedKey.substring(1, storedKey.length - 1);
+          console.log(storedKey);
+
+          decryptor.setPublicKey(storedKey);
+
+          let decryptedObj = { ...obj }; // Create a copy of the original object
+
+          if (decryptedObj.username) {
+            decryptedObj.username = decryptor.decrypt(decryptedObj.username);
+          }
+          if (decryptedObj.email) {
+            decryptedObj.email = decryptor.decrypt(decryptedObj.email);
+          }
+
+          return decryptedObj;
+        },
+
       submitLogin(){
         this.$refs.loginForm.validate((valid) => {
           if (valid) {
             this.fullscreenLoading=true;
+            this.encryptData();
             this.postKeyValueRequest('/doLogin',this.loginForm).then(resp=>{
               setTimeout(()=>{
                 this.fullscreenLoading=false;
               },1000);
               if (resp){
-                //保存当前用户到vuex
-                this.$store.state.currentUser=resp.obj;
-                //保存登录用户到sessionStorage中
-                window.sessionStorage.setItem("user",JSON.stringify(resp.obj));
-                let path=this.$route.query.redirect;
-                this.$router.replace((path=='/'||path==undefined)?"/chatroom":path);
+
+                resp.obj=this.decryptData(resp.obj);
+                sessionStorage.setItem("encryptedPassword",this.loginForm.password)
+                sessionStorage.setItem("code",this.loginForm.code)
+                this.$router.replace("/mailLogin");
+                // //保存当前用户到vuex
+                // this.$store.state.currentUser=resp.obj;
+                // //保存登录用户到sessionStorage中
+                // window.sessionStorage.setItem("user",JSON.stringify(resp.obj));
+                // let path=this.$route.query.redirect;
+                // this.$router.replace((path=='/'||path==undefined)?"/chatroom":path);
               }else {
+                this.loginForm.username='';
+                this.loginForm.password='';
                 this.changeverifyCode();
               }
             })
@@ -246,6 +330,8 @@
               if (resp){
                 this.registerDialogVisible=false;
                 location.reload();//刷新页面，清空注册界面的上传组件中的图片
+              }else{
+                location.reload();
               }
             })
           } else {
@@ -255,6 +341,57 @@
           }
         });
       },
+      // 获取邮箱验证码
+      async getMailVerifyCode() {
+        const email = this.registerForm.email;
+        // 发送POST请求
+        try {
+          const response = await axios.post('/user/mailVerifyCode', { email: email });
+
+          if (response.data) {
+            this.getCodeEnable = true;
+            // 30s内不得再次发送
+            let i = 30;
+            let id = setInterval(() => {
+              this.getCodeBtnText = i-- + "s内不能发送";
+            }, 1000);
+            setTimeout(() => {
+              clearInterval(id);
+              this.getCodeEnable = false;
+              this.getCodeBtnText = "获取邮箱验证码";
+            }, 30000);
+          }
+        } catch (error) {
+          console.error('Error while getting mail verification code:', error);
+          // 处理错误情况
+        }
+
+      },
+      // 登录获取邮箱验证码
+      async getMailVerifyCodeForlogin() {
+        const username = this.loginForm.username;
+        // 发送POST请求
+        try {
+          const response = await axios.post('/user/loginMailVerifyCode', { username: username });
+
+          if (response.data) {
+            this.getCodeEnable = true;
+            // 30s内不得再次发送
+            let i = 30;
+            let id = setInterval(() => {
+              this.getCodeBtnText = i-- + "s内不能发送";
+            }, 1000);
+            setTimeout(() => {
+              clearInterval(id);
+              this.getCodeEnable = false;
+              this.getCodeBtnText = "获取邮箱验证码";
+            }, 30000);
+          }
+        } catch (error) {
+          console.error('Error while getting mail verification code:', error);
+          // 处理错误情况
+        }
+      }
 
     }
   }
