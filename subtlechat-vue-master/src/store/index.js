@@ -52,6 +52,15 @@ const store =  new Vuex.Store({
         content:msg.content,
         messageTypeId:msg.messageTypeId,
         createTime: msg.createTime,
+        biao: msg.type
+      })
+      let arr = state.sessions['群聊']
+      arr.forEach((i, index) => {
+        if (i.biao == 1) {
+          setTimeout(() => {
+            arr.splice(index, 1)
+          }, 10000)
+        }
       })
     },
     //保存单聊数据
@@ -66,7 +75,18 @@ const store =  new Vuex.Store({
         date: new Date(),
         fromNickname:msg.fromNickname,
         messageTypeId:msg.messageTypeId,
-        self:!msg.notSelf
+        self:!msg.notSelf,
+        biao: msg.biaoji
+      })
+      let arr = state.sessions[state.currentUser.username + "#" + msg.to]
+      console.log(arr)
+      arr.forEach((i, index) => {
+        if (i.biao == 1) {
+          setTimeout(() => {
+            arr.splice(index, 1)
+            console.log(arr)
+          }, 10000)
+        }
       })
     },
     /**
@@ -139,6 +159,12 @@ const store =  new Vuex.Store({
           //接收到的消息数据
           let receiveMsg=JSON.parse(msg.body);
           console.log("收到消息"+receiveMsg);
+          if (receiveMsg.type == 1) {
+            setTimeout(() => {
+              postRequest("/groupMsgContent/deleteGroupMsgById", receiveMsg).then(resp => {
+              })
+            }, 10000)
+          }
           //当前点击的聊天界面不是群聊,默认为消息未读
           if (context.state.currentSession.username!="群聊"){
             Vue.set(context.state.isDot,context.state.currentUser.username+"#群聊",true);
