@@ -10,10 +10,10 @@
     </el-image>
     <div id="btnBar">
       <div class="topBtnBar">
-        <el-tooltip  class="item" effect="dark" content="进入群聊" placement="right">
+        <el-tooltip  class="item" effect="dark" content="Enter group chat" placement="right">
         <el-button @click="chooseChatList('群聊')" class="toolBtn" size="small"><i class="fa fa-comments fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="用户列表" placement="right">
+        <el-tooltip class="item" effect="dark" content="User List" placement="right">
         <el-button @click="chooseChatList('私聊')" class="toolBtn" size="small"><i class="fa fa-address-book-o fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="与机器人聊天" placement="right">
@@ -21,10 +21,10 @@
         </el-tooltip>
       </div>
       <div class="bottomBtnBar">
-        <el-tooltip class="item" effect="dark" content="个人中心" placement="right">
+        <el-tooltip class="item" effect="dark" content="Personal Center" placement="right">
           <el-button class="toolBtn" size="small"><i class="fa fa-user fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="更多" placement="right">
+        <el-tooltip class="item" effect="dark" content="more" placement="right">
           <el-popover
                   placement="right"
                   width="180"
@@ -32,14 +32,14 @@
                   popper-class="moreListPopoverClass"
                    >
             <ul id="moreList">
-              <li @click="showFeedbackDialog" >意见反馈</li>
-              <li>举报</li>
-              <li @click="clearChatHistory">清空聊天记录</li>
+              <li @click="showFeedbackDialog" >FeedBack</li>
+              <li>report</li>
+              <li @click="clearChatHistory">clearChatHistory</li>
             </ul>
             <el-button slot="reference" class="toolBtn" size="small"><i class="fa fa-bars fa-2x" aria-hidden="true"></i></el-button>
           </el-popover>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="退出" placement="right">
+        <el-tooltip class="item" effect="dark" content="exit" placement="right">
         <el-button @click="exitSystem" class="toolBtn" size="small"><i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
       </div>
@@ -49,8 +49,8 @@
 
       </textarea>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleFeedbackSend">确 定</el-button>
-        <el-button @click="feedBackDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleFeedbackSend">Yes</el-button>
+        <el-button @click="feedBackDialogVisible = false">Cnacel</el-button>
       </span>
     </el-dialog>
   </div>
@@ -68,28 +68,28 @@
     },
     methods:{
       //退出系统
-      exitSystem(){
-        this.$confirm('你是否要退出系统吗?', '系统提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.getRequest("/logout");
-          sessionStorage.removeItem("user");
-          //清除SessionStorage中保存的state
-          if (sessionStorage.getItem("state")){
-            sessionStorage.removeItem("state");
-          }
-          //关闭连接
-          this.$store.dispatch("disconnect");
-          this.$router.replace("/");
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消操作'
-          });
+      exitSystem() {
+      this.$confirm('Are you sure you want to exit the system?', 'System Prompt', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.getRequest("/logout");
+        sessionStorage.removeItem("user");
+        // Clear the state saved in SessionStorage
+        if (sessionStorage.getItem("state")){
+          sessionStorage.removeItem("state");
+        }
+        // Close the connection
+        this.$store.dispatch("disconnect");
+        this.$router.replace("/");
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Operation cancelled'
         });
-      },
+      });
+     },
       //选择聊天列表
       chooseChatList(listName){
         this.$store.commit("changeCurrentList",listName);
@@ -114,33 +114,34 @@
         })
       },
       //清空聊天记录
-      clearChatHistory(){
-        this.$confirm('此操作将永久删除本地聊天记录(群聊记录会在下次登录时恢复), 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          //清除本地的localStorage中的聊天记录
-          if (localStorage.getItem("chat-session")){
-            localStorage.removeItem("chat-session");
-          }
-          //清除Vuex中保存的记录
-          this.$store.state.sessionStorage={};
-          //清除SessionStorage中保存的state
-          if (sessionStorage.getItem("state")){
-            sessionStorage.removeItem("state");
-          }
-          this.$message({
-            type: 'success',
-            message: '删除成功'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
+      clearChatHistory() {
+      this.$confirm('This action will permanently delete local chat history (group chat records will be restored upon next login). Continue?', 'Tip', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        // Clear local chat records in localStorage
+        if (localStorage.getItem("chat-session")){
+          localStorage.removeItem("chat-session");
+        }
+        // Clear records saved in Vuex
+        this.$store.state.sessionStorage = {};
+        // Clear state saved in SessionStorage
+        if (sessionStorage.getItem("state")){
+          sessionStorage.removeItem("state");
+        }
+        this.$message({
+          type: 'success',
+          message: 'Deleted successfully'
         });
-      }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Deletion cancelled'
+        });
+      });
+    }
+
     }
   }
 </script>

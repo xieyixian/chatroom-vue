@@ -1,8 +1,11 @@
 <template>
-  <div class="chatTitle">
-    <span class="titleName">{{this.$store.state.currentSession.nickname?this.$store.state.currentSession.nickname:""}}</span>
-    <el-button class="moreBtn" size="small" icon="el-icon-more"></el-button>
-  </div>
+<div class="chatTitle">
+  <span class="titleName" v-if="this.$store.state.currentSession.nickname != '群聊'">{{ this.$store.state.currentSession.nickname ? this.$store.state.currentSession.nickname : '' }}</span>
+  <span class="titleName" v-else>GroupChat</span>
+
+  <el-button class="moreBtn" size="small" icon="el-icon-more"></el-button>
+</div>
+
 </template>
 
 <script>

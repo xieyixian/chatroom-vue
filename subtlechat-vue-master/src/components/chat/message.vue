@@ -67,11 +67,13 @@
 		//与当前时间的日期间隔
 			  let timeInterval=currentDate.getDate()-date.getDate();
 			  //星期数组
-			  let weekdays = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+			//   let weekdays = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+			  let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 			  //时间范围
-			  let timeRange="上午";
+			  let timeRange="morning";
 			  if (date.getHours()>12){
-				  timeRange="下午";
+				  timeRange="afternoon";
 			  }
 			  //如果与当前时间同日
 			  if (date.getMonth()==currentDate.getMonth()&&date.getDate()==currentDate.getDate()){
@@ -81,7 +83,7 @@
 			  if (date.getFullYear()==currentDate.getFullYear()&&timeInterval<=6&&timeInterval>=1) {
 				  //当前时间的前一天
 				  if (timeInterval==1){
-					  return `昨天 ${timeRange} ${date.getHours()}:${date.getMinutes()}`;
+					  return `yesterday ${timeRange} ${date.getHours()}:${date.getMinutes()}`;
 				  }
 				  else{
 					  return `${weekdays[date.getDay()]} ${timeRange} ${date.getHours()}:${date.getMinutes()}`;

@@ -3,45 +3,45 @@
     <el-header >
       <p class="text">
       </p>
-      <el-button @click="gotoAdminLogin" icon="el-icon-d-arrow-right" style="float: right;border: none" >管理端登录</el-button>
+      <el-button @click="gotoAdminLogin" icon="el-icon-d-arrow-right" style="float: right;border: none" >Admin Login</el-button>
     </el-header>
     <el-main>
       <div class="loginContainer">
         <el-form ref="loginForm" :rules="rules" :model="loginForm" label-width="80px">
-          <h3 class="loginTitle">微言SubtleChat~</h3>
-          <el-form-item label="用户名:" prop="username">
-            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="请输入用户名"></el-input>
+          <h3 class="loginTitle">Team7 Chat Room</h3>
+          <el-form-item label="username:" prop="username">
+            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="please enter username"></el-input>
           </el-form-item>
-          <el-form-item label="密码:" prop="password">
-            <el-input type="password"  v-model="loginForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
+          <el-form-item label="password:" prop="password">
+            <el-input type="password"  v-model="loginForm.password" auto-complete="off" placeholder="please enter password"></el-input>
           </el-form-item>
-          <el-form-item label="验证码:" prop="code">
-            <el-input type="text" @keydown.enter.native="submitLogin" v-model="loginForm.code" auto-complete="off" placeholder="请输入验证码" style="width:150px;"></el-input>
+          <el-form-item label="verifycode:" prop="code">
+            <el-input type="text" @keydown.enter.native="submitLogin" v-model="loginForm.code" auto-complete="off" placeholder="please enter verify code" style="width:150px;"></el-input>
             <img :src="verifyCode" title="点击切换验证码" @click="changeverifyCode" />
           </el-form-item>
-          <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> 记住我一周</span>
+          <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> Remeber Me</span>
           <div>
-            <el-button @click="showRegistryDialog" style="width:45% ;margin-right: 15px">注册</el-button>
-            <el-button type="primary" style="width:45% ;" @click="submitLogin"  v-loading.fullscreen.lock="fullscreenLoading">登录</el-button>
+            <el-button @click="showRegistryDialog" style="width:45% ;margin-right: 15px">Register</el-button>
+            <el-button type="primary" style="width:45% ;" @click="submitLogin"  v-loading.fullscreen.lock="fullscreenLoading">Login</el-button>
           </div>
         </el-form>
       </div>
     </el-main>
-    <el-dialog title="新用户注册" :before-close="closeRegisterDialog" :visible.sync="registerDialogVisible" width="30%">
+    <el-dialog title="register" :before-close="closeRegisterDialog" :visible.sync="registerDialogVisible" width="30%">
       <el-form :model="registerForm" status-icon :rules="registerRules" ref="registerForm" >
-        <el-form-item label="用户昵称：" :label-width="formLabelWidth" prop="nickname">
+        <el-form-item label="nickname：" :label-width="formLabelWidth" prop="nickname">
           <el-input v-model=" registerForm.nickname" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录用户名：" :label-width="formLabelWidth" prop="username">
+        <el-form-item label="username：" :label-width="formLabelWidth" prop="username">
             <el-input v-model="registerForm.username" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码：" :label-width="formLabelWidth" prop="password">
+        <el-form-item label="password：" :label-width="formLabelWidth" prop="password">
           <el-input type="password" v-model="registerForm.password" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="确认密码：" :label-width="formLabelWidth" prop="checkPass">
+        <el-form-item label="password-check：" :label-width="formLabelWidth" prop="checkPass">
           <el-input type="password" v-model="registerForm.checkPass" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户头像：" :label-width="formLabelWidth">
+        <el-form-item label="avtur：" :label-width="formLabelWidth">
           <el-upload
                   action="/file"
                   ref="upload"
@@ -55,20 +55,20 @@
                   :on-remove="imgRemove"
                   >
             <i  class="el-icon-plus"></i>
-            <div slot="tip" class="el-upload__tip">只能上传不超过4MB的图片(可使用默认头像！)</div>
+            <div slot="tip" class="el-upload__tip">Only images no larger than 4MB can be uploaded (default avatar can be used!)</div>
           </el-upload>
         </el-form-item>
-        <el-form-item label="邮箱地址:" prop="email">
-          <el-input type="text"  v-model="registerForm.email" auto-complete="off" placeholder="请输入邮箱" style="width: 120px;margin-right: 10px" ></el-input>
+        <el-form-item label="email:" prop="email">
+          <el-input type="text"  v-model="registerForm.email" auto-complete="off" placeholder="please enter email" style="width: 120px;margin-right: 10px" ></el-input>
           <el-button @click="getMailVerifyCode" :disabled="getCodeEnable"  size="mini">{{getCodeBtnText}}</el-button>
         </el-form-item>
 
-        <el-form-item label="验证码:" prop="mailCode">
-          <el-input type="text"  v-model="registerForm.mailCode" auto-complete="off" placeholder="请输入验证码" style="width: 120px;margin-right: 10px" ></el-input>
+        <el-form-item label="verifycode:" prop="mailCode">
+          <el-input type="text"  v-model="registerForm.mailCode" auto-complete="off" placeholder="please enter the verifycode" style="width: 120px;margin-right: 10px" ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitRegisterForm('registerForm') " style="width: 100%">注册</el-button>
+        <el-button type="primary" @click="submitRegisterForm('registerForm') " style="width: 100%">register</el-button>
       </div>
     </el-dialog>
   </el-container>
@@ -148,7 +148,7 @@ import axios from 'axios';
         fullscreenLoading:false,
         //注册表单相关
         registerDialogVisible:false,
-        getCodeBtnText:'获取邮箱验证码',
+        getCodeBtnText:'get mail code',
         getCodeEnable:false,
         formLabelWidth: '120px',
         registerForm:{

@@ -2,16 +2,16 @@
   <div id="list">
   	<ul v-if="currentList=='群聊'">
 <!--群聊列表-->
-			<p style="padding: 2px 4px;height: 20px">群聊列表</p>
+			<p style="padding: 2px 4px;height: 20px">Group Chat</p>
 			<li :class="{ active: currentSession?'群聊'== currentSession.username:false }"
 					v-on:click="changeCurrentSession(chatObj)">
 				<img class="avatar" src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1268761962,3976237305&fm=26&gp=0.jpg">
-				<el-badge :is-dot="isDot[user.username+'#群聊']"><p class="name">群聊</p></el-badge>
+				<el-badge :is-dot="isDot[user.username+'#群聊']"><p class="name">GroupChat</p></el-badge>
 			</li>
 			</ul>
 <!--机器人-->
 		<ul v-if="currentList=='机器人'">
-			<p style="padding: 2px 4px;height: 20px">快来和机器人聊天吧！</p>
+			<p style="padding: 2px 4px;height: 20px">chat with robot</p>
 			<li :class="{ active: currentSession?'机器人'== currentSession.username:false }"
 					v-on:click="changeCurrentSession(robotObj)">
 				<img class="avatar" src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2548892998,499717296&fm=26&gp=0.jpg">
@@ -22,7 +22,7 @@
 		<el-scrollbar      wrap-class="userList" wrap-style="height:600px;"
 											  view-style="height:100%;" :native="false">
 		<ul v-if="currentList=='私聊'" >
-			<p style="padding: 2px 4px;height: 20px">用户列表</p>
+			<p style="padding: 2px 4px;height: 20px">User List</p>
   		<li v-for="item in users" :class="{ active: currentSession?item.username === currentSession.username:false }"
 					v-on:click="changeCurrentSession(item)"><!--   :class="[item.id === currentSession ? 'active':'']" -->
 				<div style="display: flex;justify-content: space-between">
@@ -40,7 +40,7 @@
 						<p class="name">{{item.nickname}}</p>
 					</div>
 					<div>
-					<el-badge :value="item.userStateId==1?'在线':'离线'" :type="item.userStateId==1?'danger':'info'"></el-badge>
+					<el-badge :value="item.userStateId==1?'Online':'Offline'" :type="item.userStateId==1?'danger':'info'"></el-badge>
 					</div>
 				</div>
   		</li>
@@ -82,17 +82,17 @@ export default {
     }
   },
   initPrivateChat(currentSession) {
-      // 构建请求的payload，通常JSON的属性名使用小写
+
       const payload = {
-        username: this.$store.state.currentUser.username, // 当前登录用户的用户名
-        otherUsername: currentSession.username // 选择进行私聊的用户的用户名
+        username: this.$store.state.currentUser.username,
+        otherUsername: currentSession.username 
       };
 	  
 	  console.log("aaaaaaaaaaacccccc:", this.$store.state.currentUser);
 	   console.log("aaaaaaaaaaacccccc:", this.user.username);
 	  console.log("aaaaaaaaaaacccccc:", this.user.username);
 	  console.log("aaaaaaaaaaacccccc:", currentSession.username);
-      // 发送POST请求
+
       this.postRequest("/userchat/conversations/join", payload)
         .then(response => {
           this.$store.state.conversation = response.conversation;
@@ -103,21 +103,21 @@ export default {
 			.then(response1 => {
 				sessionStorage.setItem("AESKey",response1)
     	});
-          // 检查后端是否返回了预期的响应
+
 
         })
         .catch(error => {
-          // 错误处理
+    
           console.error("Error initializing private chat:", error);
           if (error.response) {
-            // 服务器响应了请求，但状态码不是2xx
+ 
             console.log("Error response data:", error.response.data);
             console.log("Error response status:", error.response.status);
           } else if (error.request) {
-            // 请求已发出，但没有收到响应
+   
             console.log("No response received:", error.request);
           } else {
-            // 在设置请求时发生了某些事情
+ 
             console.log("Error setting up request:", error.message);
           }
         }

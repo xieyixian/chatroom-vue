@@ -3,20 +3,20 @@
       <el-main>
         <div class="loginContainer">
           <el-form ref="loginForm" :rules="rules" :model="loginForm" label-width="80px">
-            <h3 class="loginTitle">微言SubtleChat~</h3>
+            <h3 class="loginTitle">Team7 Chat Room</h3>
 
-            <el-form-item label="用户名:" prop="username">
-              <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="请输入用户名"></el-input>
+            <el-form-item label="username:" prop="username">
+              <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="please enter the username"></el-input>
             </el-form-item>
             
-            <el-form-item label="验证码:" prop="mailCode">
-               <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="请输入验证码" style="width: 120px;margin-right: 10px" ></el-input>   
+            <el-form-item label="verify code:" prop="mailCode">
+               <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="please enter the Verify Code" style="width: 120px;margin-right: 10px" ></el-input>   
                <el-button @click="getMailVerifyCodeForlogin" :disabled="getCodeEnable"  size="mini">{{getCodeBtnText}}</el-button>
             </el-form-item>
           </el-form>
 
         <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitLogin('loginForm') " style="width: 100%">登录</el-button>
+        <el-button type="primary" @click="submitLogin('loginForm') " style="width: 100%">Login</el-button>
         </div>
         </div>
       </el-main>
@@ -46,7 +46,7 @@
             mailCode:[{required:true,message: '请输入验证码',trigger:'blur'}]
           },
           fullscreenLoading:false,
-          getCodeBtnText:'获取邮箱验证码',
+          getCodeBtnText:'get email code',
           getCodeEnable:false,
           formLabelWidth: '120px',
 
