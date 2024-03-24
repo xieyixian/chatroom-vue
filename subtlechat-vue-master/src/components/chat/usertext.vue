@@ -106,7 +106,7 @@ export default {
       content:'',
       dialogVisible: false,
       parseDialogVisible: false,
-      isLimited: false
+      isLimited: false,
       encryptedMessage: "",
     }
   },
