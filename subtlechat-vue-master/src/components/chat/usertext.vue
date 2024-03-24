@@ -137,9 +137,10 @@ export default {
       }
       this.isLimited = true;
       let msgObj=new Object();
-      msgObj.content=Encrypt(this.content);
-      msgObj.messageText=Encrypt(this.content);
-
+      msgObj.content=this.content;
+      msgObj.messageText=this.content;
+      //msgObj.content=Encrypt(this.content);
+      //msgObj.messageText=Encrypt(this.content);
       msgObj.messageTypeId=1;
       msgObj.from=this.$store.state.currentUser.username;
 
