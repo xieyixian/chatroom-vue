@@ -73,6 +73,7 @@ export default {
 	'currentList'
 	]),
   methods:{
+
 	changeCurrentSession(currentSession) {
     this.$store.commit('changeCurrentSession', currentSession);
     // 如果是私聊且不是群聊或机器人，尝试检查或创建房间
@@ -95,7 +96,13 @@ export default {
       this.postRequest("/userchat/conversations/join", payload)
         .then(response => {
           this.$store.state.conversation = response.conversation;
-  
+			console.log(response.conversation.conversationId);
+			const userConversationId = response.conversation.conversationId;
+
+		this.postRequest("/getAESKey?userConversationId=" + userConversationId)
+			.then(response1 => {
+				sessionStorage.setItem("AESKey",response1)
+    	});
           // 检查后端是否返回了预期的响应
 
         })
@@ -113,7 +120,12 @@ export default {
             // 在设置请求时发生了某些事情
             console.log("Error setting up request:", error.message);
           }
-        });
+        }
+		
+		
+		);
+		
+
 		// this.getRequest("/userchat/conversations/41/messages").then(resp=>{
     //       if (resp){
 		// 	console.log("11112111Error response data:", resp);
