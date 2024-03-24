@@ -94,6 +94,7 @@
 
 <script>
 import {mapState} from 'vuex';
+import {Encrypt} from "@/main";
 
 const appData=require("../../utils/emoji.json")//引入存放emoji表情的json文件
 
@@ -105,7 +106,8 @@ export default {
       content:'',
       dialogVisible: false,
       parseDialogVisible: false,
-      isLimited: false
+      isLimited: false,
+      encryptedMessage: "",
     }
   },
   mounted(){
@@ -137,6 +139,8 @@ export default {
       let msgObj=new Object();
       msgObj.content=this.content;
       msgObj.messageText=this.content;
+      //msgObj.content=Encrypt(this.content);
+      //msgObj.messageText=Encrypt(this.content);
       msgObj.messageTypeId=1;
       msgObj.from=this.$store.state.currentUser.username;
 
@@ -149,6 +153,7 @@ export default {
         console.log(this.content);
         msgObj.type = val
         msgObj.fromId = this.$store.state.currentUser.id;
+
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
       }
       //给机器人发送消息

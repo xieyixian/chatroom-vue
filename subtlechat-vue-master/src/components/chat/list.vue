@@ -114,19 +114,12 @@ export default {
             console.log("Error setting up request:", error.message);
           }
         });
-		this.getRequest("/userchat/conversations/41/messages").then(resp=>{
-          if (resp){
-			console.log("11112111Error response data:", resp);
-            //Vue.set(state.sessions,'群聊',resp);
-          }
-        })
-
-		this.postRequest("/api/groupchat/send?groupId=2&messageText=Hello%20world!&messageTypeId=1&senderUsername=1234").then(resp=>{
-          if (resp){
-			console.log("11112111Error response data:", resp);
-            //Vue.set(state.sessions,'群聊',resp);
-          }
-        })
+		// this.getRequest("/userchat/conversations/41/messages").then(resp=>{
+    //       if (resp){
+		// 	console.log("11112111Error response data:", resp);
+    //         //Vue.set(state.sessions,'群聊',resp);
+    //       }
+    //     })
     }
 
 
