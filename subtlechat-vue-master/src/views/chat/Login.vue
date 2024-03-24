@@ -1,6 +1,8 @@
 <template>
   <el-container>
     <el-header >
+      <p class="text">
+      </p>
       <el-button @click="gotoAdminLogin" icon="el-icon-d-arrow-right" style="float: right;border: none" >管理端登录</el-button>
     </el-header>
     <el-main>
