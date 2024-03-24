@@ -79,6 +79,8 @@
 <script>
 import JSEncrypt from 'jsencrypt';
 import axios from 'axios';
+import { MessageBox } from 'element-ui';
+const vm = this;
   export default {
     name: "Login",
     data(){
@@ -240,43 +242,88 @@ import axios from 'axios';
           return decryptedObj;
         },
 
-      submitLogin(){
-        this.$refs.loginForm.validate((valid) => {
-          if (valid) {
-            this.fullscreenLoading=true;
-            this.encryptData();
-            this.postKeyValueRequest('/doLogin',this.loginForm).then(resp=>{
-              setTimeout(()=>{
-                this.fullscreenLoading=false;
-              },1000);
-              if (resp){
-                //保存当前用户到vuex
-                console.log("6666666666666666aaaaaaaaaaacccccc:", resp.obj.user);
-                this.$store.state.currentUser=resp.obj.user;
-                //保存登录用户到sessionStorage中
-                console.log('11111111111111111111111111',resp)
-                window.sessionStorage.setItem("user",JSON.stringify(resp.obj.user));
-                console.log('11111111111111111111111111', window.sessionStorage.getItem("user"))
-                //let path=this.$route.query.redirect;
-               // this.$router.replace((path=='/'||path==undefined)?"/chatroom":path);
 
-                //resp.obj=this.decryptData(resp.obj);
-                sessionStorage.setItem("encryptedPassword",this.loginForm.password)
-                sessionStorage.setItem("code",this.loginForm.code)
-                this.$router.replace("/mailLogin");
-              
-              }else {
-                this.loginForm.username='';
-                this.loginForm.password='';
-                this.changeverifyCode();
-              }
-            })
-          } else {
-            this.$message.error("用户名,密码和验证码都不能为空！");
-            return false;
-          }
-        });
+        async checkIPAddress() {
+  try {
+    const response = await fetch('http://localhost:5000/ipcheck', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
       },
+      body: JSON.stringify({ /* 你需要发送的数据 */ })
+    });
+    
+    const data = await response.json();
+    console.log("111111111111111:", data.prediction);
+    return data.prediction; // 直接返回预测值
+  } catch (error) {
+    console.error('IP check request failed:', error);
+    throw new Error('IP检查请求失败');
+  }
+},
+
+async submitLogin() {
+  // 获取IP检查的结果
+  const ipcheck = await this.checkIPAddress();
+
+  if (ipcheck !== 2) {
+    let message;
+
+    if (ipcheck === 0) {
+      message = '你的IP检查通过，是否继续登录?';
+    } else {
+      message = '你的IP可能存在威胁，是否继续登录?';
+    }
+     console.log('message:', message);
+    try {
+      await this.$confirm(message, '确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      });
+
+      // 弹窗后的逻辑处理
+      this.$refs.loginForm.validate(async (valid) => {
+        if (valid) {
+          this.fullscreenLoading = true;
+          this.encryptData();
+
+          try {
+            const resp = await this.postKeyValueRequest('/doLogin', this.loginForm);
+            setTimeout(() => {
+              this.fullscreenLoading = false;
+            }, 1000);
+
+            if (resp) {
+              // 成功逻辑处理
+              this.$store.state.currentUser = resp.obj.user;
+              sessionStorage.setItem("encryptedPassword", this.loginForm.password);
+              sessionStorage.setItem("code", this.loginForm.code);
+              this.$router.replace("/mailLogin");
+            } else {
+              // 登录失败逻辑处理
+              this.loginForm.username = '';
+              this.loginForm.password = '';
+              this.changeverifyCode();
+            }
+          } catch (error) {
+            this.fullscreenLoading = false;
+            console.error('登录请求失败:', error);
+          }
+        } else {
+          this.$message.error("用户名,密码和验证码都不能为空！");
+        }
+      });
+    } catch (error) {
+      // 用户取消弹窗
+      console.log('用户取消了操作');
+    }
+  } else {
+    // 黑名单用户的处理逻辑
+    console.log("黑名单不能登录系统:", ipcheck);
+  }
+},
+
       changeverifyCode(){
         this.verifyCode="/verifyCode?time="+new Date();
       },
