@@ -1,16 +1,16 @@
 <template>
   <el-container>
     <el-header class="homeHeader">
-      <div class="title">微言聊天室管理端</div>
+      <div class="title">management terminal</div>
       <div>
         <el-dropdown class="choices" @command="commandHandler">
         <span class="el-dropdown-link">
           {{user.name}}<i><img :src="user.userProfile"></i>
         </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="userInfo">个人中心</el-dropdown-item>
-            <el-dropdown-item command="setting">设置</el-dropdown-item>
-            <el-dropdown-item command="logout" divided>注销登录</el-dropdown-item>
+            <el-dropdown-item command="userInfo">Personal Center</el-dropdown-item>
+            <el-dropdown-item command="setting">Setting</el-dropdown-item>
+            <el-dropdown-item command="logout" divided>Logout</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -30,11 +30,11 @@
       </el-aside>
       <el-main>
         <el-breadcrumb separator-class="el-icon-arrow-right" v-if="this.$router.currentRoute.path!='/home'">
-          <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/home' }">Home</el-breadcrumb-item>
           <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
         </el-breadcrumb>
         <div class="homeWelcome" v-if="this.$router.currentRoute.path=='/home'">
-          欢迎来到微言聊天室管理端！
+          Welcome
         </div>
         <router-view class="homeRouterView"/>
       </el-main>

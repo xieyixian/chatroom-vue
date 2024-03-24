@@ -1,25 +1,25 @@
 <template>
   <el-container>
     <el-header>
-      <el-button @click="gotoClientLogin" icon="el-icon-d-arrow-left" style="border: none" >客户端登录</el-button>
+      <el-button @click="gotoClientLogin" icon="el-icon-d-arrow-left" style="border: none" >user login</el-button>
     </el-header>
     <el-main>
       <div class="loginContainer">
         <el-form ref="loginForm" :rules="rules" :model="loginForm" label-width="80px">
-          <h3 class="loginTitle">管理端登录</h3>
-          <el-form-item label="用户名:" prop="username">
-            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="请输入用户名"></el-input>
+          <h3 class="loginTitle">Admin Login</h3>
+          <el-form-item label="username:" prop="username">
+            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="please enter username"></el-input>
           </el-form-item>
-          <el-form-item label="密码:" prop="password">
-            <el-input type="password"  v-model="loginForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
+          <el-form-item label="password:" prop="password">
+            <el-input type="password"  v-model="loginForm.password" auto-complete="off" placeholder="please enter password"></el-input>
           </el-form-item>
-          <el-form-item label="验证码:" prop="mailCode">
-             <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="请输入验证码" style="width: 120px;margin-right: 10px" ></el-input>
+          <el-form-item label="verify_code:" prop="mailCode">
+             <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="please enter verify code" style="width: 120px;margin-right: 10px" ></el-input>
 <!--            <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="无需填入验证码" style="width: 120px;margin-right: 10px" ></el-input>-->
              <el-button @click="getMailVerifyCode" :disabled="getCodeEnable"  size="mini">{{getCodeBtnText}}</el-button>
           </el-form-item>
-          <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> 记住我一周</span>
-          <el-button type="primary" style="width:100% ;" @click="submitLogin"  v-loading.fullscreen.lock="fullscreenLoading">登录</el-button>
+          <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> Remeber me</span>
+          <el-button type="primary" style="width:100% ;" @click="submitLogin"  v-loading.fullscreen.lock="fullscreenLoading">Login</el-button>
         </el-form>
       </div>
     </el-main>
@@ -47,7 +47,7 @@ import axios from 'axios';
         },
         fullscreenLoading:false,
         getCodeEnable:false,
-        getCodeBtnText:'获取邮箱验证码',
+        getCodeBtnText:'get email code',
       }
     },
     created() {

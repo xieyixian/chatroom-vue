@@ -21,74 +21,74 @@
         <el-button id="uploadImgBtn" icon="el-icon-picture-outline"></el-button>
       </el-upload>
       <el-button id="steganographyBtn" slot="reference" class="no-border" @click="showDialog">
-        <i class="fa" aria-hidden="true">隐写图片</i>
+        <i class="fa" aria-hidden="true">steganographic pictures</i>
       </el-button>
-      <el-dialog :visible.sync="dialogVisible" title="隐写图片" width="80%" @close="closeDialog" top>
+      <el-dialog :visible.sync="dialogVisible" title="steganographic pictures" width="80%" @close="closeDialog" top>
         <div class="emotionList">
-          <div style="height: 30px;line-height: 30px;width: 100%">选择文件：<input type='file' id='file' @change="importImage"/></div>
+          <div style="height: 30px;line-height: 30px;width: 100%">select file: <input type='file' id='file' @change="importImage"/></div>
           <hr />
           <div style="width: 100%;">
-            <span style="width: 100%">图片预览</span>
+            <span style="width: 100%">Picture Preview</span>
             <canvas id='canvas' style="width: 100%;"></canvas>
           </div>
           <hr />
           <!--要隐写的信息-->
           <div style="width: 100%;margin: 10px 0;">
-            隐写信息：<textarea id='msgContent' cols="100" rows="1" style="border-color: #e6a23c"></textarea>
-            <button id='encode' class='submit' @click="encode">隐写</button>
+            steganographic message:<textarea id='msgContent' cols="100" rows="1" style="border-color: #e6a23c"></textarea>
+            <button id='encode' class='submit' @click="encode">steganographic</button>
           </div>
           <hr />
           <!--隐写后的图片-->
           <div style="width: 100%;">
-            隐写图片：<img id='output' style="width: 100%;"/>
+            Hidden Image:<img id='output' style="width: 100%;"/>
           </div>
           <hr />
           <div>
-            <button id='decode' @click="decode">从隐写图片读取信息</button>
-            读出的隐写内容：<span id='messageDecoded'></span>
+            <button id='decode' @click="decode">Read Information from Hidden Image</button>
+            Decoded hidden content:<span id='messageDecoded'></span>
           </div>
           <hr />
           <!--解密出的信息-->
           <div id="footer" slot="footer">
             <span style="display: inline-block;float: right">
-              <button id='close' @click="closeDialog">取消</button>
-              <button id='selectImg' @click="selectImg">上传</button>
+              <button id='close' @click="closeDialog">cancel</button>
+              <button id='selectImg' @click="selectImg">upload</button>
             </span>
           </div>
         </div>
       </el-dialog>
 
       <el-button id="unSteganographyBtn" slot="reference" class="no-border" @click="parseShowDialog">
-        <i class="fa" aria-hidden="true">解析隐写图片</i>
+        <i class="fa" aria-hidden="true">Analyze Steganographic Image</i>
       </el-button>
-      <el-dialog :visible.sync="parseDialogVisible" title="解析隐写图片" width="80%" @close="parseCloseDialog" top>
+      <el-dialog :visible.sync="parseDialogVisible" title="Parse steganographic images" width="80%" @close="parseCloseDialog" top>
         <div class="emotionList">
           <div style="height: 30px;line-height: 30px;width: 100%">
-            选择文件：<input type='file' id='parseFile' @change="parseImportImage"/></div>
+            select file:<input type='file' id='parseFile' @change="parseImportImage"/></div>
           <hr />
           <div style="width: 100%;">
-            <span style="width: 100%">图片预览</span>
+            <span style="width: 100%">Image Preview</span>
             <canvas id='parseCanvas' style="width: 100%;"></canvas>
           </div>
           <hr />
           <div>
-            <button id='parseDecode' @click="parseDecode">从隐写图片读取信息</button>
-            读出的隐写内容：<span id='parseMessageDecoded'></span>
+            <button id='parseDecode' @click="parseDecode">Read Information from Hidden Image</button>
+            Decoded hidden content:<span id='parseMessageDecoded'></span>
           </div>
           <hr />
           <!--解密出的信息-->
           <div id="parseFooter" slot="footer">
             <span style="display: inline-block;float: right">
-              <button id='parseClose' @click="parseCloseDialog">取消</button>
+              <button id='parseClose' @click="parseCloseDialog">Cancel</button>
             </span>
           </div>
         </div>
       </el-dialog>
     </div>
-    <textarea id="textarea" placeholder="按 Ctrl + Enter 发送" v-model="content" v-on:keyup="addMessage">
+    <textarea id="textarea" placeholder="Press Ctrl + Enter to send" v-model="content" v-on:keyup="addMessage">
     </textarea>
-    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(0)" >发送(S)</el-button>
-    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(1)" >限时消息</el-button>
+    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(0)" >Send(S)</el-button>
+    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(1)" >Limited time message</el-button>
   </div>
 </template>
 
@@ -124,7 +124,7 @@ export default {
       if(!this.content || this.content.match(/^[ ]*$/)) {
         this.$message({
           showClose: true,
-          message: '不能发送空白信息'
+          message: 'Cannot send blank messages'
         });
         return;
       }
