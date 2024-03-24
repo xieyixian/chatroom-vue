@@ -54,14 +54,14 @@ new Vue({
 }).$mount('#app')
 
 // 默认的 KEY 与 iv 如果没有给
-const KEY = CryptoJS.enc.Utf8.parse("1234567890123456");
-const IV = CryptoJS.enc.Utf8.parse('1234567890123456');
+// const KEY = CryptoJS.enc.Utf8.parse("1234567890123456");
+// const IV = CryptoJS.enc.Utf8.parse('1234567890123456');
 /**
  * AES加密 ：字符串 key iv  返回base64
  */
-export function Encrypt(word, keyStr, ivStr) {
-  let key = KEY
-  let iv = IV
+export function Encrypt1(word, keyStr, ivStr) {
+  let key = keyStr
+  let iv = ivStr
 
   if (keyStr) {
     key = CryptoJS.enc.Utf8.parse(keyStr);
@@ -82,9 +82,9 @@ export function Encrypt(word, keyStr, ivStr) {
  * AES 解密 ：字符串 key iv  返回base64
  *
  */
-export function Decrypt(word, keyStr, ivStr) {
-  let key = KEY; // 假设KEY是一个先前定义的常量
-  let iv = IV; // 假设IV是一个先前定义的常量
+export function Decrypt1(word, keyStr, ivStr) {
+  let key = keyStr; // 假设KEY是一个先前定义的常量
+  let iv = ivStr; // 假设IV是一个先前定义的常量
 
   if (keyStr) {
     key = CryptoJS.enc.Utf8.parse(keyStr);

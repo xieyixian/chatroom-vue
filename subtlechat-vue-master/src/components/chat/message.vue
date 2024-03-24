@@ -9,7 +9,7 @@
 				<div class="main" :class="{self:entry.self}">
 					  <p class="username">{{entry.fromNickname}}</p>
 					<img class="avatar" :src="entry.self ? user.userProfile: currentSession.userProfile" alt="">
-					<p v-if="entry.messageTypeId==1" class="text">{{entry.content}}</p>
+					<p v-if="entry.messageTypeId==1" class="text">{{decrypt(entry.content)}}</p>
 					  <img v-if="entry.messageTypeId==2" :src="entry.content" class="img">
 				</div>
 			</li>
@@ -44,7 +44,7 @@
   
   <script>
   import {mapState} from 'vuex'
-  
+  import {Decrypt1} from "@/main";
   export default {
 	name: 'message',
 	data () {
@@ -106,7 +106,12 @@
 			  console.log("拍了一怕");
 			  let s=fromName+"拍了拍"+toName;
   
-		  }
+		  },
+		decrypt(content) {
+		console.log(content)
+		let content1=Decrypt1(content,sessionStorage.getItem("AESKey"),sessionStorage.getItem("AESKey"))
+		return content1
+		},
 	  }
   }
   </script>
