@@ -5,9 +5,9 @@
         <div class="emotionList">
           <a href="javascript:void(0);" @click="getEmo(index)" v-for="(item,index) in faceList" :key="index" class="emotionItem">{{item}}</a>
         </div>
-        <el-button id="emojiBtn" class="emotionSelect" slot="reference">
+        <!-- <el-button id="emojiBtn" class="emotionSelect" slot="reference">
           <i class="fa fa-smile-o" aria-hidden="true"></i>
-        </el-button>
+        </el-button> -->
       </el-popover>
       <el-upload
               class="upload-btn"
@@ -87,8 +87,8 @@
     </div>
     <textarea id="textarea" placeholder="Press Ctrl + Enter to send" v-model="content" v-on:keyup="addMessage">
     </textarea>
-    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(0)" >Send(S)</el-button>
-    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(1)" >Limited time message</el-button>
+    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(0)" style="transform: translateY(-14px);">Send(S)</el-button>
+    <el-button id="sendBtn" type="primary" size="mini" @click="addMessageByClick(1)" style="transform: translateY(-14px);">Limited time message</el-button>
   </div>
 </template>
 
@@ -135,7 +135,7 @@ export default {
         });
         return;
       }
-      this.isLimited = true;
+      //this.isLimited = true;
       let msgObj=new Object();
       msgObj.content=this.content;
       msgObj.messageText=this.content;

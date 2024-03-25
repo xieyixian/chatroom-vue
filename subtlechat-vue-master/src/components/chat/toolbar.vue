@@ -14,14 +14,14 @@
         <el-button @click="chooseChatList('群聊')" class="toolBtn" size="small"><i class="fa fa-comments fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="User List" placement="right">
-        <el-button @click="chooseChatList('私聊')" class="toolBtn" size="small"><i class="fa fa-address-book-o fa-2x" aria-hidden="true"></i></el-button>
+        <el-button @click="chooseChatList('私聊')" class="toolBtn" size="small"><i class="fa el-icon-user-solid fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="与机器人聊天" placement="right">
+        <!-- <el-tooltip class="item" effect="dark" content="与机器人聊天" placement="right">
           <el-button @click="chooseChatList('机器人')" class="toolBtn" size="small"><i class="fa fa-android fa-2x" aria-hidden="true"></i></el-button>
-        </el-tooltip>
+        </el-tooltip> -->
       </div>
       <div class="bottomBtnBar">
-        <el-tooltip class="item" effect="dark" content="Personal Center" placement="right">
+        <!-- <el-tooltip class="item" effect="dark" content="Personal Center" placement="right">
           <el-button class="toolBtn" size="small"><i class="fa fa-user fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="more" placement="right">
@@ -38,7 +38,7 @@
             </ul>
             <el-button slot="reference" class="toolBtn" size="small"><i class="fa fa-bars fa-2x" aria-hidden="true"></i></el-button>
           </el-popover>
-        </el-tooltip>
+        </el-tooltip> -->
         <el-tooltip class="item" effect="dark" content="exit" placement="right">
         <el-button @click="exitSystem" class="toolBtn" size="small"><i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
