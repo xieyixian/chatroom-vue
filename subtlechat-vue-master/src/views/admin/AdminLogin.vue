@@ -15,7 +15,7 @@
           </el-form-item>
           <el-form-item label="verify_code:" prop="mailCode">
              <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="please enter verify code" style="width: 120px;margin-right: 10px" ></el-input>
-<!--            <el-input type="text"  v-model="loginForm.mailCode" auto-complete="off" placeholder="无需填入验证码" style="width: 120px;margin-right: 10px" ></el-input>-->
+
              <el-button @click="getMailVerifyCode" :disabled="getCodeEnable"  size="mini">{{getCodeBtnText}}</el-button>
           </el-form-item>
           <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> Remeber me</span>
@@ -98,8 +98,7 @@ import axios from 'axios';
                 this.fullscreenLoading=false;
               },1000);
               if (resp){
-                //alert("登录成功！");
-                 //保存登录用户到session中
+
                 resp.obj=this.decryptData(resp.obj);
                  window.sessionStorage.setItem("admin",JSON.stringify(resp.obj));
                  this.$router.replace("/home");
@@ -119,7 +118,7 @@ import axios from 'axios';
       gotoClientLogin(){
         this.$router.replace("/");
       },
-      //获取邮箱验证码
+
       getMailVerifyCode(){
         const adminUsername = this.loginForm.username;
         window.sessionStorage.setItem('adminUsername', adminUsername);
@@ -127,7 +126,7 @@ import axios from 'axios';
         this.postRequest("/admin/mailVerifyCode", {username: adminUsername}).then(resp=>{
           if (resp){
             this.getCodeEnable=true;
-            //30s内不得再次发送
+
               let i=30;
             let id=setInterval(()=>{
               this.getCodeBtnText=i--+"s Cannot send within";

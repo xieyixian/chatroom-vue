@@ -17,7 +17,7 @@
           </el-form-item>
           <el-form-item label="verifycode:" prop="code">
             <el-input type="text" @keydown.enter.native="submitLogin" v-model="loginForm.code" auto-complete="off" placeholder="please enter verify code" style="width:150px;"></el-input>
-            <img :src="verifyCode" title="点击切换验证码" @click="changeverifyCode" />
+            <img :src="verifyCode" title="Click to switch verification code" @click="changeverifyCode" />
           </el-form-item>
           <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> Remeber Me</span>
           <div>
@@ -88,7 +88,7 @@ const vm = this;
         if (value === '') {
           callback(new Error('Please enter a nickname'));
         }
-        //检查昵称是否重复
+
           this.getRequest("user/checkNickname?nickname="+value).then(resp=>{
             if (resp!=0){
               callback(new Error("This nickname has been registered"))
@@ -101,7 +101,7 @@ const vm = this;
         if (value === '') {
           callback(new Error('please enter user name'));
         }
-        //检查用户名是否重复
+
         this.getRequest("/user/checkUsername?username="+value).then(resp=>{
             if (resp!=0){
               callback(new Error('this username has been registered'));
@@ -148,7 +148,7 @@ const vm = this;
           mailCode:[{required:true,message: 'please enter verification code',trigger:'blur'}]
         },
         fullscreenLoading:false,
-        //注册表单相关
+
         registerDialogVisible:false,
         getCodeBtnText:'get mail code',
         getCodeEnable:false,
@@ -177,18 +177,18 @@ const vm = this;
           ],
         },
         uploadDisabled:false,
-        //上传的文件信息列表
+
         fileList:[],
       };
     },
     created() {
-      // 假设 this.item 是需要存储的数据
+
 
       axios.get('/getPublicKey')
           .then(response => {
             const responseData = response;
             console.log("Receive public key: " + responseData)
-            // 将数据存储到 session 中
+
             sessionStorage.setItem('publicKey', JSON.stringify(responseData));
           })
     },
@@ -201,7 +201,7 @@ const vm = this;
           encryptor.setPublicKey(storedKey);
 
           sessionStorage.setItem("encryptedUsername",this.loginForm.username);
-          // 加密数据
+
           this.loginForm.username = encryptor.encrypt(this.loginForm.username);
           this.loginForm.password = encryptor.encrypt(this.loginForm.password);
           console.log("Data is Encrypted, the data is: " + this.loginForm.username+" and "+ this.loginForm.password);
@@ -250,12 +250,12 @@ const vm = this;
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ /* 你需要发送的数据 */ })
+      body: JSON.stringify({ })
     });
     
     const data = await response.json();
-   // console.log("111111111111111:", data.prediction);
-    return data.prediction; // 直接返回预测值
+
+    return data.prediction;
   } catch (error) {
     console.error('IP check request failed:', error);
     throw new Error('IP check request failed');
@@ -263,7 +263,7 @@ const vm = this;
 },
 
 async submitLogin() {
-  // 获取IP检查的结果
+
   const ipcheck = await this.checkIPAddress();
 
   if (ipcheck !== 2) {
@@ -282,7 +282,7 @@ async submitLogin() {
         type: 'warning'
       });
 
-      // 弹窗后的逻辑处理
+
       this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
           this.fullscreenLoading = true;
@@ -295,13 +295,13 @@ async submitLogin() {
             }, 1000);
 
             if (resp) {
-              // 成功逻辑处理
+
               this.$store.state.currentUser = resp.obj.user;
               sessionStorage.setItem("encryptedPassword", this.loginForm.password);
               sessionStorage.setItem("code", this.loginForm.code);
               this.$router.replace("/mailLogin");
             } else {
-              // 登录失败逻辑处理
+
               this.loginForm.username = '';
               this.loginForm.password = '';
               this.changeverifyCode();
@@ -315,11 +315,11 @@ async submitLogin() {
         }
       });
     } catch (error) {
-      // 用户取消弹窗
+
       console.log('User canceled the operation');
     }
   } else {
-    // 黑名单用户的处理逻辑
+
     console.log("Blacklist cannot log in to the system:", ipcheck);
   }
 },
@@ -333,10 +333,7 @@ async submitLogin() {
       showRegistryDialog(){
         this.registerDialogVisible=true;
       },
-      /**
-       *       图片上传的方法
-       */
-      //上传前
+
       beforeAvatarUpload(file) {
         let isLt4M = file.size / 1024 / 1024 < 4;
 
@@ -345,44 +342,44 @@ async submitLogin() {
         }
         return isLt4M;
       },
-      // 上传中
+
       onProgress(event, file, fileList){
         this.uploadDisabled = true;
       },
-      // 图片上传成功
+
       imgSuccess(response, file, fileList) {
         this.uploadDisabled = true;
-        this.registerForm.userProfile=response;//将返回的路径给表单的头像属性
+        this.registerForm.userProfile=response;
         console.log("The image url is:"+this.registerForm.userProfile);
       },
-      // 图片上传失败
+  
       imgError(err, file, fileList){
         this.$message.error("upload failed");
         this.uploadDisabled = false;
       },
-      //移除图片
+
       imgRemove(file,fileList){
         this.uploadDisabled = false;
       },
       closeRegisterDialog(done){
-        this.registerForm={//清空表单
+        this.registerForm={
           nickname:'',
           username:'',
           password:'',
           checkPass:'',
           userProfile:'',
         };
-        //this.$refs.upload.clearFiles();//清除上传组件的图片
-        done();//关闭对话框
+        //this.$refs.upload.clearFiles();
+        done();
       },
-      //提交注册操作
+
       submitRegisterForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.postRequest("/user/register",this.registerForm).then(resp=>{
               if (resp){
                 this.registerDialogVisible=false;
-                location.reload();//刷新页面，清空注册界面的上传组件中的图片
+                location.reload();
               }else{
                 location.reload();
               }
@@ -394,16 +391,16 @@ async submitLogin() {
           }
         });
       },
-      // 获取邮箱验证码
+
       async getMailVerifyCode() {
         const email = this.registerForm.email;
-        // 发送POST请求
+
         try {
           const response = await axios.post('/user/mailVerifyCode', { email: email });
 
           if (response.data) {
             this.getCodeEnable = true;
-            // 30s内不得再次发送
+
             let i = 30;
             let id = setInterval(() => {
               this.getCodeBtnText = i-- + "s Cannot send within ";
@@ -416,20 +413,20 @@ async submitLogin() {
           }
         } catch (error) {
           console.error('Error while getting mail verification code:', error);
-          // 处理错误情况
+
         }
 
       },
-      // 登录获取邮箱验证码
+
       async getMailVerifyCodeForlogin() {
         const username = this.loginForm.username;
-        // 发送POST请求
+
         try {
           const response = await axios.post('/user/loginMailVerifyCode', { username: username });
 
           if (response.data) {
             this.getCodeEnable = true;
-            // 30s内不得再次发送
+
             let i = 30;
             let id = setInterval(() => {
               this.getCodeBtnText = i-- + "s Cannot send within";
@@ -442,7 +439,7 @@ async submitLogin() {
           }
         } catch (error) {
           console.error('Error while getting mail verification code:', error);
-          // 处理错误情况
+
         }
       }
 
@@ -460,13 +457,10 @@ async submitLogin() {
     margin: 100px auto;
     border-radius:15px ;
     border: 1px solid #eaeaea;
-    /*添加阴影 h-shadow(水平阴影位置)，v-shadow(垂直阴影位置)，blur(阴影大小)，color(颜色)*/
+
     box-shadow: 10px 10px 35px #cac6c6;
     background: #fff;
-    /*background-clip——规定背景的绘制区域*/
-    /*border-box：背景被裁剪到边框盒*/
-    /*padding-box：背景被裁剪到内边距框*/
-    /*content-box：背景被裁剪到内容框*/
+
     background-clip: padding-box;
     padding: 25px 35px 25px 35px;
   }

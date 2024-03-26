@@ -32,13 +32,13 @@
             <canvas id='canvas' style="width: 100%;"></canvas>
           </div>
           <hr />
-          <!--要隐写的信息-->
+
           <div style="width: 100%;margin: 10px 0;">
             steganographic message:<textarea id='msgContent' cols="100" rows="1" style="border-color: #e6a23c"></textarea>
             <button id='encode' class='submit' @click="encode">steganographic</button>
           </div>
           <hr />
-          <!--隐写后的图片-->
+
           <div style="width: 100%;">
             Hidden Image:<img id='output' style="width: 100%;"/>
           </div>
@@ -48,7 +48,7 @@
             Decoded hidden content:<span id='messageDecoded'></span>
           </div>
           <hr />
-          <!--解密出的信息-->
+
           <div id="footer" slot="footer">
             <span style="display: inline-block;float: right">
               <button id='close' @click="closeDialog">cancel</button>
@@ -76,7 +76,7 @@
             Decoded hidden content:<span id='parseMessageDecoded'></span>
           </div>
           <hr />
-          <!--解密出的信息-->
+
           <div id="parseFooter" slot="footer">
             <span style="display: inline-block;float: right">
               <button id='parseClose' @click="parseCloseDialog">Cancel</button>
@@ -96,13 +96,13 @@
 import {mapState} from 'vuex';
 import {Encrypt1} from "@/main";
 
-const appData=require("../../utils/emoji.json")//引入存放emoji表情的json文件
+const appData=require("../../utils/emoji.json")
 
 export default {
   name: 'uesrtext',
   data () {
     return {
-      faceList:[],//表情包数据
+      faceList:[],
       content:'',
       dialogVisible: false,
       parseDialogVisible: false,
@@ -111,7 +111,7 @@ export default {
     }
   },
   mounted(){
-    for (let i in appData){//读取json文件保存数据给数组
+    for (let i in appData){
       this.faceList.push(appData[i].char);
     }
   },
@@ -131,7 +131,7 @@ export default {
       if(this.isLimited){
         this.$message({
           showClose: true,
-          message: '操作太频繁，稍后再试'
+          message: 'Operation too frequent, try again later'
         });
         return;
       }
@@ -148,23 +148,23 @@ export default {
       // console.log(this.$store.state.conversation.conversationId);
       // console.log(JSON.parse(JSON.stringify(this.$store.state.conversation)));
       // console.log('currentUserId:',this.$store.state.currentUser.id);
-      //发送群聊消息
-      if (this.currentSession.username=="群聊"){
+
+      if (this.currentSession.username=="group_chat"){
        // console.log(this.content);
         msgObj.type = val
         msgObj.fromId = this.$store.state.currentUser.id;
 
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
       }
-      //给机器人发送消息
+
       if (this.currentSession.username=="机器人"){
         msgObj.fromNickname=this.$store.state.currentUser.nickname;
         msgObj.to='机器人';
         this.$store.state.stomp.send("/ws/robotChat",{},JSON.stringify(msgObj));
-        //保存该条记录到session
+
         this.$store.commit('addMessage',msgObj);
       }
-      //发送私聊消息
+
       else{
         // msgObj.from=this.$store.state.currentUser.username;
         msgObj.fromNickname=this.$store.state.currentUser.nickname;
@@ -182,10 +182,10 @@ export default {
       msgObj.messageText=Encrypt1(this.content,AesKey,AesIV);
         this.$store.state.stomp.send("/ws/chat",{},JSON.stringify(msgObj));
 
-        //提交私聊消息记录
+        
         this.$store.commit('addMessage',msgObj);
       }
-      //清空输入框
+
       this.content='';
 
       setTimeout(()=>{this.isLimited = false},5000);
@@ -196,40 +196,39 @@ export default {
   		}
   	},
     /**
-     *       图片上传的方法
+     *        upload pictures
      */
-    //上传前
+
     beforeAvatarUpload(file) {
-      //不给机器人发送图片
-      if (this.currentSession.username=="机器人") {
-        this.$message.error("瓦力拒绝接收你的图片！")
-      }
-      //判断图片大小
+
+
+      
+
       let isLt1M = file.size / 1024 / 1024 < 1;
       console.log(file)
       if (!isLt1M) {
-        this.$message.error('上传图片大小不能超过 1MB!');
+        this.$message.error('The size of the uploaded image cannot exceed 1MB!');
       }
-      //判断图片的格式
+
       let imgType=file.name.substring(file.name.lastIndexOf(".")+1);
       imgType=imgType.toLowerCase();
       let isImg=imgType==='jpg'|| imgType==='png'|| imgType==='jpeg'||imgType==='gif';
        if (!isImg){
-         this.$message.error('上传图片格式不符合要求！');
+         this.$message.error('The uploaded image format does not meet the requirements!');
        }
        console.log('limit1m,isImg',isLt1M,isImg)
       return isLt1M&&isImg;
     },
-    // 图片上传成功
+
     imgSuccess(response, file, fileList) {
-      console.log("图片url为："+response);
+
       let msgObj=new Object();
       msgObj.content=response;
       msgObj.messageText=response;
-      //设置消息类型为图片
+
       msgObj.messageTypeId=2;
       //console.log("123123123123123",msgObj);
-      if (this.currentSession.username=="群聊"){
+      if (this.currentSession.username=="group_chat"){
         msgObj.fromId = this.$store.state.currentUser.id;
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
         this.$store.commit('addMessage',msgObj);
@@ -242,41 +241,41 @@ export default {
         msgObj.conversation=this.$store.state.conversation;
         msgObj.conversationId=this.$store.state.conversation.conversationId;
         msgObj.to=this.currentSession.username;
-        let AesKey=sessionStorage.getItem("AESKey")
-        let AesIV=sessionStorage.getItem("AESKey")
-        msgObj.content=Encrypt1(msgObj.content,AesKey,AesIV);
-        msgObj.messageText=Encrypt1(msgObj.messageText,AesKey,AesIV);
+        // let AesKey=sessionStorage.getItem("AESKey")
+        // let AesIV=sessionStorage.getItem("AESKey")
+        // msgObj.content=Encrypt1(msgObj.content,AesKey,AesIV);
+        // msgObj.messageText=Encrypt1(msgObj.messageText,AesKey,AesIV);
 
         //console.log("123123123123123",msgObj);
         this.$store.state.stomp.send("/ws/chat",{},JSON.stringify(msgObj));
-        //提交私聊消息记录
+
         this.$store.commit('addMessage',msgObj);
       }
     },
-    // 图片上传失败
+
     imgError(err, file, fileList){
-      this.$message.error("上传失败");
+      this.$message.error("upload failed");
     },
-    //获取Emoji
+
     getEmo(index){
       var textArea=document.getElementById('textarea');
-      //将选中的表情插入到输入文本的光标之后
+
       function changeSelectedText(obj, str) {
         if (window.getSelection) {
-          // 非IE浏览器
+
           textArea.setRangeText(str);
-          // 在未选中文本的情况下，重新设置光标位置
+
           textArea.selectionStart += str.length;
           textArea.focus()
         } else if (document.selection) {
-          // IE浏览器
+
           obj.focus();
           var sel = document.selection.createRange();
           sel.text = str;
         }
       }
       changeSelectedText(textArea,this.faceList[index]);
-      this.content=textArea.value;// 要同步data中的数据
+      this.content=textArea.value;
       // console.log(this.faceList[index]);
       return;
 
@@ -290,10 +289,10 @@ export default {
       file.value = '';
       let message = document.getElementById('msgContent');
       message.value = '';
-      //隐写后的图片
+
       let output = document.getElementById('output');
       output.src = '';
-      //画布
+
       let canvas = document.getElementById('canvas');
       let ctx = canvas.getContext('2d');
       ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -319,24 +318,24 @@ export default {
       reader.readAsDataURL(e.target.files[0]);
     },
     encode() {
-      //信息
+
       let message = document.getElementById('msgContent').value;
-      //隐写后的图片
+
       let output = document.getElementById('output');
-      //画布
+
       let canvas = document.getElementById('canvas');
       let ctx = canvas.getContext('2d');
       console.log(message)
-      //是否超过能隐写的最大量
+
       let pixelCount = ctx.canvas.width * ctx.canvas.height;
       if ((message.length + 1) * 16 > pixelCount * 4 * 0.75) {
-        alert('内容太多了，超过了可写入的最大量');
+        alert('Too much content, exceeding the maximum amount that can be written');
         return;
       }
-      //核心函数：隐写
+
       let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-      //将二进制编码信息转为字符串
+
       let getNumberFromBits = function (bytes, history) {
         let number = 0, pos = 0;
         while (pos < 16) {
@@ -366,7 +365,7 @@ export default {
       let setBit = function (number, location, bit) {
         return (number & ~(1 << location)) | (bit << location);
       };
-      //将信息字符串转为二进制编码
+
       let getMessageBits = function (message) {
         let messageBits = [];
         for (let i = 0; i < message.length; i++) {
@@ -406,13 +405,13 @@ export default {
         showClose: true,
         message: '隐写成功，信息已隐藏到图片中'
       });
-      //显示出隐写后的图片
+
       output.src = canvas.toDataURL();
     },
     decode() {
       let ctx = document.getElementById('canvas').getContext('2d');
       let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-      //核心功能：从图片数据中读取隐写信息
+
       let getNextLocation = function (history, total) {
         var pos = history.length;
         var loc = Math.abs(pos + 1) % total;
@@ -429,7 +428,7 @@ export default {
           }
         }
       };
-      //将二进制编码信息转为字符串
+
       let getNumberFromBits = function (bytes, history) {
         var number = 0, pos = 0;
         while (pos < 16) {
@@ -507,7 +506,7 @@ export default {
       this.parseDialogVisible = false;
       let file = document.getElementById('parseFile');
       file.value = '';
-      //画布
+
       let canvas = document.getElementById('parseCanvas');
       let ctx = canvas.getContext('2d');
       ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -518,7 +517,7 @@ export default {
     parseDecode() {
       let ctx = document.getElementById('parseCanvas').getContext('2d');
       let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-      //核心功能：从图片数据中读取隐写信息
+
       let getNextLocation = function (history, total) {
         var pos = history.length;
         var loc = Math.abs(pos + 1) % total;
@@ -535,7 +534,7 @@ export default {
           }
         }
       };
-      //将二进制编码信息转为字符串
+
       let getNumberFromBits = function (bytes, history) {
         var number = 0, pos = 0;
         while (pos < 16) {
@@ -574,8 +573,8 @@ export default {
 
 
 <style lang="scss">
-  /* el-popover是和app同级的，所以scoped的局部属性设置无效 */
-  /* 需要设置全局style */
+
+
   .el-popover{
     height:200px;
     width:450px;
@@ -599,7 +598,7 @@ export default {
   	height: 58%;
   	border: none;
   	outline: none;
-    resize: none;//禁止拉伸
+    resize: none;
   }
   #sendBtn{
     float: right;
@@ -637,23 +636,23 @@ export default {
   font-size:20px;
   text-align:center;
 }
-/*包含以下四种的链接*/
+
 .emotionItem {
   text-decoration: none;
 }
-/*正常的未被访问过的链接*/
+
 .emotionItem:link {
   text-decoration: none;
 }
-/*已经访问过的链接*/
+
 .emotionItem:visited {
   text-decoration: none;
 }
-/*鼠标划过(停留)的链接*/
+
 .emotionItem:hover {
   text-decoration: none;
 }
-/* 正在点击的链接*/
+
 .emotionItem:active {
   text-decoration: none;
 }

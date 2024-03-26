@@ -1,6 +1,6 @@
 <template>
 <div class="chatTitle">
-  <span class="titleName" v-if="this.$store.state.currentSession.nickname != '群聊'">{{ this.$store.state.currentSession.nickname ? this.$store.state.currentSession.nickname : '' }}</span>
+  <span class="titleName" v-if="this.$store.state.currentSession.nickname != 'group_chat'">{{ this.$store.state.currentSession.nickname ? this.$store.state.currentSession.nickname : '' }}</span>
   <span class="titleName" v-else>GroupChat</span>
 
   

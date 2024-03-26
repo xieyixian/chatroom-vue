@@ -83,7 +83,7 @@ Vue.use(VueRouter)
   //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   // }
 ]
-//解决重复访问路由地址报错
+
 const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)

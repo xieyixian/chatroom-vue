@@ -1,6 +1,6 @@
 <template>
 	<div id="message" v-scroll-bottom="sessions">
-		  <div v-if="currentSession&&currentSession.username!='群聊'">
+		  <div v-if="currentSession&&currentSession.username!='group_chat'">
 		<ul >
 			<li v-for="entry in sessions[user.username+'#'+currentSession.username]" >
 				<p class="time">
@@ -17,16 +17,16 @@
 	  </div>
 		  <div v-else>
 		  <ul>
-			  <li v-for="entry in sessions['群聊']" :key="entry.id">
+			  <li v-for="entry in sessions['group_chat']" :key="entry.id">
 				  <p class="time">
 					  <span>{{entry.createTime | time}}</span>
 				  </p>
 				  <div class="main" :class="{self:entry.fromId==user.id}">
 					  <p class="username">{{entry.fromName}}</p>
-					  <img @dblclick="takeAShot" class="avatar" :src="entry.fromId==user.id? user.userProfile:entry.fromProfile" alt="">
+					  <img @dblclick="takeAShot" class="avatar" :src="entry.fromId==user.id? user.userProfile:(entry.fromProfile.substring(1, entry.fromProfile.length - 1))" alt="">
 					  <div v-if="(entry.messageTypeId==1)"><p class="text" v-html="entry.content"></p></div>
 					  <div v-else>
-			  <!--图片预览与无法加载图片的图标-->
+
 						  <el-image :src="entry.content"
 											  :preview-src-list="[entry.content]"
 											  class="img">
@@ -62,26 +62,26 @@
 		if (date) {
 		  date = new Date(date);
 		}
-		//当前的时间
+
 			  let currentDate=new Date();
-		//与当前时间的日期间隔
+
 			  let timeInterval=currentDate.getDate()-date.getDate();
-			  //星期数组
-			//   let weekdays = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+
+
 			  let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-			  //时间范围
+
 			  let timeRange="morning";
 			  if (date.getHours()>12){
 				  timeRange="afternoon";
 			  }
-			  //如果与当前时间同日
+
 			  if (date.getMonth()==currentDate.getMonth()&&date.getDate()==currentDate.getDate()){
 				  return `${timeRange} ${date.getHours()}:${date.getMinutes()}`;
 			  }
-			  //在当前时间同一年且日期间隔在7天内
+
 			  if (date.getFullYear()==currentDate.getFullYear()&&timeInterval<=6&&timeInterval>=1) {
-				  //当前时间的前一天
+
 				  if (timeInterval==1){
 					  return `yesterday ${timeRange} ${date.getHours()}:${date.getMinutes()}`;
 				  }
@@ -89,13 +89,13 @@
 					  return `${weekdays[date.getDay()]} ${timeRange} ${date.getHours()}:${date.getMinutes()}`;
 				  }
 			  }
-			  //如果日期超过7天
+
 			  else
 				  return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} ${timeRange}  ${date.getHours()}:${date.getMinutes()}`;
 		}
 	},
-	directives: {/*这个是vue的自定义指令,官方文档有详细说明*/
-	  // 发送消息后滚动到底部,这里无法使用原作者的方法，也未找到合理的方法解决，暂用setTimeout的方法模拟
+	directives: {
+
 	  'scroll-bottom' (el) {
 		//console.log(el.scrollTop);
 		setTimeout(function () {

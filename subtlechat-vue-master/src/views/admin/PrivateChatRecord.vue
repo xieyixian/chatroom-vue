@@ -1,6 +1,6 @@
 <template>
 <div>
-  <p>私聊信息管理</p>
+  <p>Private chat information management</p>
 </div>
 </template>
 
