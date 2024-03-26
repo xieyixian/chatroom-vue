@@ -140,17 +140,17 @@ export default {
       msgObj.content=this.content;
       msgObj.messageText=this.content;
 
-      console.log("111111111"+msgObj)
+      //console.log("111111111"+msgObj)
       msgObj.messageTypeId=1;
       msgObj.from=this.$store.state.currentUser.username;
 
-      console.log(this.$store.state);
-      console.log(this.$store.state.conversation.conversationId);
-      console.log(JSON.parse(JSON.stringify(this.$store.state.conversation)));
-      console.log('currentUserId:',this.$store.state.currentUser.id);
+      // console.log(this.$store.state);
+      // console.log(this.$store.state.conversation.conversationId);
+      // console.log(JSON.parse(JSON.stringify(this.$store.state.conversation)));
+      // console.log('currentUserId:',this.$store.state.currentUser.id);
       //发送群聊消息
       if (this.currentSession.username=="群聊"){
-        console.log(this.content);
+       // console.log(this.content);
         msgObj.type = val
         msgObj.fromId = this.$store.state.currentUser.id;
 
@@ -228,7 +228,7 @@ export default {
       msgObj.messageText=response;
       //设置消息类型为图片
       msgObj.messageTypeId=2;
-      console.log("123123123123123",msgObj);
+      //console.log("123123123123123",msgObj);
       if (this.currentSession.username=="群聊"){
         msgObj.fromId = this.$store.state.currentUser.id;
         this.$store.state.stomp.send("/ws/groupChat",{},JSON.stringify(msgObj));
@@ -242,7 +242,12 @@ export default {
         msgObj.conversation=this.$store.state.conversation;
         msgObj.conversationId=this.$store.state.conversation.conversationId;
         msgObj.to=this.currentSession.username;
-        console.log("123123123123123",msgObj);
+        let AesKey=sessionStorage.getItem("AESKey")
+        let AesIV=sessionStorage.getItem("AESKey")
+        msgObj.content=Encrypt1(msgObj.content,AesKey,AesIV);
+        msgObj.messageText=Encrypt1(msgObj.messageText,AesKey,AesIV);
+
+        //console.log("123123123123123",msgObj);
         this.$store.state.stomp.send("/ws/chat",{},JSON.stringify(msgObj));
         //提交私聊消息记录
         this.$store.commit('addMessage',msgObj);
@@ -468,6 +473,7 @@ export default {
           'filename': f.name,
           'module': 'group-chat'
         }).then(resp=>{
+            console.log("aaaa111111111aaaaaaacccccc:", resp);
             this.imgSuccess(resp);
         });
       }

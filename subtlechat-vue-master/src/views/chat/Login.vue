@@ -86,12 +86,12 @@ const vm = this;
     data(){
       var validateNickname = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入昵称'));
+          callback(new Error('Please enter a nickname'));
         }
         //检查昵称是否重复
           this.getRequest("user/checkNickname?nickname="+value).then(resp=>{
             if (resp!=0){
-              callback(new Error("该昵称已被注册"))
+              callback(new Error("This nickname has been registered"))
             } else {
               callback();
             }
@@ -99,12 +99,12 @@ const vm = this;
       };
       var validateUsername = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入用户名'));
+          callback(new Error('please enter user name'));
         }
         //检查用户名是否重复
         this.getRequest("/user/checkUsername?username="+value).then(resp=>{
             if (resp!=0){
-              callback(new Error('该用户名已被注册'));
+              callback(new Error('this username has been registered'));
             }
             else {
               callback();
@@ -114,7 +114,7 @@ const vm = this;
       };
       var validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('Please enter password'));
         } else {
           if (this.registerForm.checkPass !== '') {
             this.$refs.registerForm.validateField('checkPass');
@@ -124,9 +124,9 @@ const vm = this;
       };
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请再次输入密码'));
+          callback(new Error('Please enter password again'));
         } else if (value !== this.registerForm.password) {
-          callback(new Error('两次输入密码不一致!'));
+          callback(new Error('The password entered twice is inconsistent!'));
         } else {
           callback();
         }
@@ -141,11 +141,11 @@ const vm = this;
         verifyCode:'/verifyCode',
         checked:true,
         rules: {
-          username:[{required:true,message:'请输入用户名',trigger:'blur'}],
-          password:[{required:true,message: '请输入密码',trigger:'blur'}],
-          code:[{required:true,message: '请输入验证码',trigger:'blur'}],
-          email:[{required:true,message: '请输入邮箱',trigger:'blur'}],
-          mailCode:[{required:true,message: '请输入验证码',trigger:'blur'}]
+          username:[{required:true,message:'please enter user name',trigger:'blur'}],
+          password:[{required:true,message: 'Please enter password',trigger:'blur'}],
+          code:[{required:true,message: 'please enter verification code',trigger:'blur'}],
+          email:[{required:true,message: 'please input your email',trigger:'blur'}],
+          mailCode:[{required:true,message: 'please enter verification code',trigger:'blur'}]
         },
         fullscreenLoading:false,
         //注册表单相关
@@ -254,11 +254,11 @@ const vm = this;
     });
     
     const data = await response.json();
-    console.log("111111111111111:", data.prediction);
+   // console.log("111111111111111:", data.prediction);
     return data.prediction; // 直接返回预测值
   } catch (error) {
     console.error('IP check request failed:', error);
-    throw new Error('IP检查请求失败');
+    throw new Error('IP check request failed');
   }
 },
 
@@ -270,15 +270,15 @@ async submitLogin() {
     let message;
 
     if (ipcheck === 0) {
-      message = '你的IP检查通过，是否继续登录?';
+      message = 'Your IP check passed, do you want to continue logging in??';
     } else {
-      message = '你的IP可能存在威胁，是否继续登录?';
+      message = 'Your IP may be a threat. Do you want to continue logging in?';
     }
      console.log('message:', message);
     try {
-      await this.$confirm(message, '确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      await this.$confirm(message, 'confirm', {
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       });
 
@@ -308,19 +308,19 @@ async submitLogin() {
             }
           } catch (error) {
             this.fullscreenLoading = false;
-            console.error('登录请求失败:', error);
+            console.error('Login request failed:', error);
           }
         } else {
-          this.$message.error("用户名,密码和验证码都不能为空！");
+          this.$message.error("Username, password and verification code cannot be empty!");
         }
       });
     } catch (error) {
       // 用户取消弹窗
-      console.log('用户取消了操作');
+      console.log('User canceled the operation');
     }
   } else {
     // 黑名单用户的处理逻辑
-    console.log("黑名单不能登录系统:", ipcheck);
+    console.log("Blacklist cannot log in to the system:", ipcheck);
   }
 },
 
@@ -341,7 +341,7 @@ async submitLogin() {
         let isLt4M = file.size / 1024 / 1024 < 4;
 
         if (!isLt4M) {
-          this.$message.error('上传头像图片大小不能超过 4MB!');
+          this.$message.error('The size of the uploaded avatar image cannot exceed 4MB!');
         }
         return isLt4M;
       },
@@ -353,11 +353,11 @@ async submitLogin() {
       imgSuccess(response, file, fileList) {
         this.uploadDisabled = true;
         this.registerForm.userProfile=response;//将返回的路径给表单的头像属性
-        console.log("图片url为："+this.registerForm.userProfile);
+        console.log("The image url is:"+this.registerForm.userProfile);
       },
       // 图片上传失败
       imgError(err, file, fileList){
-        this.$message.error("上传失败");
+        this.$message.error("upload failed");
         this.uploadDisabled = false;
       },
       //移除图片
@@ -388,7 +388,7 @@ async submitLogin() {
               }
             })
           } else {
-            this.$message.error("请正确填写信息！");
+            this.$message.error("Please fill in the information correctly!");
             console.log('error submit!!');
             return false;
           }
@@ -406,12 +406,12 @@ async submitLogin() {
             // 30s内不得再次发送
             let i = 30;
             let id = setInterval(() => {
-              this.getCodeBtnText = i-- + "s内不能发送";
+              this.getCodeBtnText = i-- + "s Cannot send within ";
             }, 1000);
             setTimeout(() => {
               clearInterval(id);
               this.getCodeEnable = false;
-              this.getCodeBtnText = "获取邮箱验证码";
+              this.getCodeBtnText = "Get email verification code";
             }, 30000);
           }
         } catch (error) {
@@ -432,12 +432,12 @@ async submitLogin() {
             // 30s内不得再次发送
             let i = 30;
             let id = setInterval(() => {
-              this.getCodeBtnText = i-- + "s内不能发送";
+              this.getCodeBtnText = i-- + "s Cannot send within";
             }, 1000);
             setTimeout(() => {
               clearInterval(id);
               this.getCodeEnable = false;
-              this.getCodeBtnText = "获取邮箱验证码";
+              this.getCodeBtnText = "Get email verification code";
             }, 30000);
           }
         } catch (error) {

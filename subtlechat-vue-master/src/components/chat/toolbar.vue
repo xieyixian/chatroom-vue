@@ -67,7 +67,6 @@
       }
     },
     methods:{
-      //退出系统
       exitSystem() {
       this.$confirm('Are you sure you want to exit the system?', 'System Prompt', {
         confirmButtonText: 'OK',
