@@ -17,7 +17,7 @@
           </el-form-item>
           <el-form-item label="verifycode:" prop="code">
             <el-input type="text" @keydown.enter.native="submitLogin" v-model="loginForm.code" auto-complete="off" placeholder="please enter verify code" style="width:150px;"></el-input>
-            <img :src="verifyCode" title="点击切换验证码" @click="changeverifyCode" />
+            <img :src="verifyCode" title="Click to switch verification code" @click="changeverifyCode" />
           </el-form-item>
           <el-checkbox v-model="checked" class="loginRemember"></el-checkbox><span> Remeber Me</span>
           <div>
@@ -84,12 +84,12 @@ import axios from 'axios';
     data(){
       var validateNickname = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入昵称'));
+          callback(new Error('Please enter a nickname'));
         }
-        //检查昵称是否重复
+
           this.getRequest("user/checkNickname?nickname="+value).then(resp=>{
             if (resp!=0){
-              callback(new Error("该昵称已被注册"))
+              callback(new Error("This nickname has been registered"))
             } else {
               callback();
             }
@@ -97,12 +97,12 @@ import axios from 'axios';
       };
       var validateUsername = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入用户名'));
+          callback(new Error('please enter user name'));
         }
-        //检查用户名是否重复
+
         this.getRequest("/user/checkUsername?username="+value).then(resp=>{
             if (resp!=0){
-              callback(new Error('该用户名已被注册'));
+              callback(new Error('this username has been registered'));
             }
             else {
               callback();
@@ -112,7 +112,7 @@ import axios from 'axios';
       };
       var validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('Please enter password'));
         } else {
           if (this.registerForm.checkPass !== '') {
             this.$refs.registerForm.validateField('checkPass');
@@ -122,9 +122,9 @@ import axios from 'axios';
       };
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请再次输入密码'));
+          callback(new Error('Please enter password again'));
         } else if (value !== this.registerForm.password) {
-          callback(new Error('两次输入密码不一致!'));
+          callback(new Error('The password entered twice is inconsistent!'));
         } else {
           callback();
         }
@@ -139,14 +139,14 @@ import axios from 'axios';
         verifyCode:'/verifyCode',
         checked:true,
         rules: {
-          username:[{required:true,message:'请输入用户名',trigger:'blur'}],
-          password:[{required:true,message: '请输入密码',trigger:'blur'}],
-          code:[{required:true,message: '请输入验证码',trigger:'blur'}],
-          email:[{required:true,message: '请输入邮箱',trigger:'blur'}],
-          mailCode:[{required:true,message: '请输入验证码',trigger:'blur'}]
+          username:[{required:true,message:'Please enter username',trigger:'blur'}],
+           password:[{required:true,message: 'Please enter password',trigger:'blur'}],
+           code:[{required:true,message: 'Please enter the verification code',trigger:'blur'}],
+           email:[{required:true,message: 'Please enter your email',trigger:'blur'}],
+           mailCode:[{required:true,message: 'Please enter the verification code',trigger:'blur'}]
         },
         fullscreenLoading:false,
-        //注册表单相关
+
         registerDialogVisible:false,
         getCodeBtnText:'get mail code',
         getCodeEnable:false,
@@ -175,18 +175,18 @@ import axios from 'axios';
           ],
         },
         uploadDisabled:false,
-        //上传的文件信息列表
+
         fileList:[],
       };
     },
     created() {
-      // 假设 this.item 是需要存储的数据
+
 
       axios.get('/getPublicKey')
           .then(response => {
             const responseData = response;
             console.log("Receive public key: " + responseData)
-            // 将数据存储到 session 中
+
             sessionStorage.setItem('publicKey', JSON.stringify(responseData));
           })
     },
@@ -199,7 +199,7 @@ import axios from 'axios';
           encryptor.setPublicKey(storedKey);
 
           sessionStorage.setItem("encryptedUsername",this.loginForm.username);
-          // 加密数据
+
           this.loginForm.username = encryptor.encrypt(this.loginForm.username);
           this.loginForm.password = encryptor.encrypt(this.loginForm.password);
           console.log("Data is Encrypted, the data is: " + this.loginForm.username+" and "+ this.loginForm.password);
@@ -250,10 +250,10 @@ import axios from 'axios';
                 this.fullscreenLoading=false;
               },1000);
               if (resp){
-                //保存当前用户到vuex
+
                 console.log("6666666666666666aaaaaaaaaaacccccc:", resp.obj.user);
                 this.$store.state.currentUser=resp.obj.user;
-                //保存登录用户到sessionStorage中
+
                 console.log('11111111111111111111111111',resp)
                 window.sessionStorage.setItem("user",JSON.stringify(resp.obj.user));
                 console.log('11111111111111111111111111', window.sessionStorage.getItem("user"))
@@ -272,7 +272,7 @@ import axios from 'axios';
               }
             })
           } else {
-            this.$message.error("用户名,密码和验证码都不能为空！");
+            this.$message.error("Username, password and verification code cannot be empty!");
             return false;
           }
         });
@@ -286,116 +286,113 @@ import axios from 'axios';
       showRegistryDialog(){
         this.registerDialogVisible=true;
       },
-      /**
-       *       图片上传的方法
-       */
-      //上传前
+
       beforeAvatarUpload(file) {
         let isLt4M = file.size / 1024 / 1024 < 4;
 
         if (!isLt4M) {
-          this.$message.error('上传头像图片大小不能超过 4MB!');
+          this.$message.error('The size of the uploaded avatar image cannot exceed 4MB!');
         }
         return isLt4M;
       },
-      // 上传中
+
       onProgress(event, file, fileList){
         this.uploadDisabled = true;
       },
-      // 图片上传成功
+
       imgSuccess(response, file, fileList) {
         this.uploadDisabled = true;
-        this.registerForm.userProfile=response;//将返回的路径给表单的头像属性
-        console.log("图片url为："+this.registerForm.userProfile);
+        this.registerForm.userProfile=response;
+
       },
-      // 图片上传失败
+
       imgError(err, file, fileList){
-        this.$message.error("上传失败");
+        this.$message.error("upload fail");
         this.uploadDisabled = false;
       },
-      //移除图片
+
       imgRemove(file,fileList){
         this.uploadDisabled = false;
       },
       closeRegisterDialog(done){
-        this.registerForm={//清空表单
+        this.registerForm={
           nickname:'',
           username:'',
           password:'',
           checkPass:'',
           userProfile:'',
         };
-        //this.$refs.upload.clearFiles();//清除上传组件的图片
-        done();//关闭对话框
+        this.$refs.upload.clearFiles();
+        done();
       },
-      //提交注册操作
+
       submitRegisterForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.postRequest("/user/register",this.registerForm).then(resp=>{
               if (resp){
                 this.registerDialogVisible=false;
-                location.reload();//刷新页面，清空注册界面的上传组件中的图片
+                location.reload();
               }else{
                 location.reload();
               }
             })
           } else {
-            this.$message.error("请正确填写信息！");
+            this.$message.error("Please fill in the information correctly!");
             console.log('error submit!!');
             return false;
           }
         });
       },
-      // 获取邮箱验证码
+
       async getMailVerifyCode() {
         const email = this.registerForm.email;
-        // 发送POST请求
+
         try {
           const response = await axios.post('/user/mailVerifyCode', { email: email });
 
           if (response.data) {
             this.getCodeEnable = true;
-            // 30s内不得再次发送
+
             let i = 30;
-            let id = setInterval(() => {
-              this.getCodeBtnText = i-- + "s内不能发送";
-            }, 1000);
-            setTimeout(() => {
-              clearInterval(id);
-              this.getCodeEnable = false;
-              this.getCodeBtnText = "获取邮箱验证码";
-            }, 30000);
+             let id = setInterval(() => {
+               this.getCodeBtnText =  "Cannot send within "+ i-- +" s";
+             }, 1000);
+             setTimeout(() => {
+               clearInterval(id);
+               this.getCodeEnable = false;
+               this.getCodeBtnText = "Get email verification code";
+             }, 30000);
           }
         } catch (error) {
           console.error('Error while getting mail verification code:', error);
-          // 处理错误情况
+
         }
 
       },
-      // 登录获取邮箱验证码
+
       async getMailVerifyCodeForlogin() {
         const username = this.loginForm.username;
-        // 发送POST请求
+
         try {
           const response = await axios.post('/user/loginMailVerifyCode', { username: username });
 
           if (response.data) {
             this.getCodeEnable = true;
-            // 30s内不得再次发送
+
             let i = 30;
             let id = setInterval(() => {
-              this.getCodeBtnText = i-- + "s内不能发送";
+              this.getCodeBtnText = "Cannot send within "+ i-- +" s";
             }, 1000);
             setTimeout(() => {
               clearInterval(id);
               this.getCodeEnable = false;
-              this.getCodeBtnText = "获取邮箱验证码";
+              this.getCodeBtnText = "Get email verification code";
             }, 30000);
           }
         } catch (error) {
           console.error('Error while getting mail verification code:', error);
-          // 处理错误情况
+
         }
       }
 
@@ -413,13 +410,10 @@ import axios from 'axios';
     margin: 100px auto;
     border-radius:15px ;
     border: 1px solid #eaeaea;
-    /*添加阴影 h-shadow(水平阴影位置)，v-shadow(垂直阴影位置)，blur(阴影大小)，color(颜色)*/
+
     box-shadow: 10px 10px 35px #cac6c6;
     background: #fff;
-    /*background-clip——规定背景的绘制区域*/
-    /*border-box：背景被裁剪到边框盒*/
-    /*padding-box：背景被裁剪到内边距框*/
-    /*content-box：背景被裁剪到内容框*/
+
     background-clip: padding-box;
     padding: 25px 35px 25px 35px;
   }
@@ -431,8 +425,5 @@ import axios from 'axios';
   .loginRemember{
     margin: 5px auto 35px 80px;
   }
-  /*.el-form-item__content{*/
-  /* display: flex;*/
-  /*  align-items: center*/
-  /*}*/
+
 </style>

@@ -1,8 +1,8 @@
 <template>
 <div>
   <div>
-    用户账号状态选择：
-    <el-select v-model="stateValue" placeholder="请选择">
+    User account status selection:
+    <el-select v-model="stateValue" placeholder="Select">
       <el-option
               v-for="item in stateOptions"
               :key="item.value"
@@ -10,12 +10,12 @@
               :value="item.value">
       </el-option>
     </el-select>
-    <el-input placeholder="输入用户昵称进行搜索"
+    <el-input placeholder="Enter user nickname to search"
               prefix-icon="el-icon-search"
               style="width: 200px;margin: 0 10px"
                v-model="nameKeyword"></el-input>
-    <el-button @click="initUserData" icon="el-icon-search" type="primary">搜索</el-button>
-    <el-button @click="refreshTable" icon="el-icon-refresh" type="primary">刷新表格</el-button>
+    <el-button @click="initUserData" icon="el-icon-search" type="primary">Search</el-button>
+    <el-button @click="refreshTable" icon="el-icon-refresh" type="primary">Fresh</el-button>
   </div>
   <div style="margin-top: 20px;width: 1000px">
     <el-table
@@ -31,21 +31,21 @@
       </el-table-column>
       <el-table-column
               prop="id"
-              label="编号"
+              label="id"
               width="80">
       </el-table-column>
       <el-table-column
               prop="username"
-              label="用户名"
+              label="username"
               width="180">
       </el-table-column>
       <el-table-column
               prop="nickname"
-              label="昵称"
+              label="nickname"
               width="180">
       </el-table-column>
       <el-table-column
-              label="用户头像"
+              label="avatar"
                width="100">
         <template slot-scope="scope">
           <el-image :src="scope.row.userProfile"
@@ -58,33 +58,33 @@
         </template>
       </el-table-column>
       <el-table-column
-              label="是否锁定该账户"
+              label="Whether to lock this account"
                width="200">
         <template slot-scope="scope">
         <el-switch
                 v-model="scope.row.accountNonLocked"
                 @change="changeLockedStatus(scope.row)"
-                active-text="未锁定"
-                inactive-text="锁定"
+                active-text="Unlock"
+                inactive-text="Lock"
                 active-color="#13ce66"
                 inactive-color="#ff4949">
         </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="Operation">
         <template slot-scope="scope">
           <el-button
                   size="mini"
-                  @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                  @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
           <el-button
                   size="mini"
                   type="danger"
-                  @click="handleDelete(scope.row)">删除</el-button>
+                  @click="handleDelete(scope.row)">Delete</el-button>
         </template>
       </el-table-column>
     </el-table>
     <div style="display: flex;justify-content: space-between;margin-top: 10px">
-      <el-button @click="handleMultiDelete" :disabled="multipleSelection.length==0?true:false" type="danger" icon="el-icon-delete">批量删除</el-button>
+      <el-button @click="handleMultiDelete" :disabled="multipleSelection.length==0?true:false" type="danger" icon="el-icon-delete">Batch Delete</el-button>
       <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -105,35 +105,35 @@
     name: "UserInfo",
     data(){
       return{
-        stateValue:-1,//默认用户状态
+        stateValue:-1,
         stateOptions:[
           {
-            label:'请选择',
+            label:'Select',
             value:-1
           },
           {
-            label:'未锁定',
+            label:'UnLock',
             value:0
           },
           {
-            label:'已锁定',
+            label:'Locked',
             value:1
           }
         ],
        userData:[],
-       total:0,//表格数据总数
-        page:1,//当前页的页数
-        size:10,//当前页的显示条数
-        nameKeyword:'',//搜索关键字
-        multipleSelection: [],//多选框选中的数组
-        loading:false,//加载动画
+       total:0,
+        page:1,
+        size:10,
+        nameKeyword:'',
+        multipleSelection: [],
+        loading:false,
       }
     },
     mounted(){
       this.initUserData();
     },
     methods:{
-      //获取表格数据
+
       initUserData(){
         this.loading=true;
         let url="/user/?page="+this.page+"&size="+this.size;
@@ -153,23 +153,23 @@
           }
         })
       },
-      //改变当前页大小的回调函数
+ 
       handleSizeChange(val){
         this.size=val;
         this.initUserData();
       },
-      //改变当前页数的回调函数
+
       handleCurrentChange(val){
         this.page=val;
         this.initUserData();
       },
-      //刷新表格
+
       refreshTable(){
         this.nameKeyword='';
         this.stateValue=-1;
         this.initUserData();
       },
-      //更改用户锁定状态
+
       changeLockedStatus(data){
         this.putRequest("/user/?id="+data.id+"&isLocked="+!data.accountNonLocked).then(resp=>{
           if(resp){
@@ -177,54 +177,54 @@
           }
         })
   },
-  //删除单个用户
-      handleDelete(data){
-        this.$confirm('此操作将永久删除用户【'+data.nickname+'】, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.deleteRequest("/user/"+data.id).then(resp=>{
-            if (resp){
-              //刷新表格
-              this.initUserData();
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-      },
-      //当选择项发生变化时会触发该事件
+
+  handleDelete(data){
+         this.$confirm('This operation will permanently delete the user ['+data.nickname+'], do you want to continue?', 'Prompt', {
+           confirmButtonText: 'OK',
+           cancelButtonText: 'Cancel',
+           type: 'warning'
+         }).then(() => {
+           this.deleteRequest("/user/"+data.id).then(resp=>{
+             if (resp){
+   
+               this.initUserData();
+             }
+           })
+         }).catch(() => {
+           this.$message({
+             type: 'info',
+             message: 'Deletion canceled'
+           });
+         });
+       },
+
       handleSelectionChange(val){
         this.multipleSelection=val;
       },
-      //处理批量删除用户
-      handleMultiDelete(){
-        this.$confirm('此操作将永久删除【'+this.multipleSelection.length+'】个用户, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let url="/user/?";
-          this.multipleSelection.forEach(item=>{
-            url+="ids="+item.id+"&";
-          })
-          this.deleteRequest(url).then(resp=>{
-            if (resp){
-              this.initUserData();
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
 
-      }
+      handleMultiDelete(){
+         this.$confirm('This operation will permanently delete ['+this.multipleSelection.length+'] users, do you want to continue?', 'Prompt', {
+           confirmButtonText: 'OK',
+           cancelButtonText: 'Cancel',
+           type: 'warning'
+         }).then(() => {
+           let url="/user/?";
+           this.multipleSelection.forEach(item=>{
+             url+="ids="+item.id+"&";
+           })
+           this.deleteRequest(url).then(resp=>{
+             if (resp){
+               this.initUserData();
+             }
+           })
+         }).catch(() => {
+           this.$message({
+             type: 'info',
+             message: 'Deletion canceled'
+           });
+         });
+
+       }
     }
   }
 </script>

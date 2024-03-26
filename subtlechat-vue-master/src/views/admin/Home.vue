@@ -8,8 +8,8 @@
           {{user.name}}<i><img :src="user.userProfile"></i>
         </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="userInfo">Personal Center</el-dropdown-item>
-            <el-dropdown-item command="setting">Setting</el-dropdown-item>
+
+           
             <el-dropdown-item command="logout" divided>Logout</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -47,7 +47,7 @@
     name: "Home",
     data(){
       return{
-        user:JSON.parse(window.sessionStorage.getItem("admin"))//user的JSON对象
+        user:JSON.parse(window.sessionStorage.getItem("admin"))
       }
     },
     computed:{
@@ -60,20 +60,20 @@
         this.$router.push("/userinfo")
       },
       commandHandler(cmd){
-        //注销登录操作
+
         if (cmd=='logout'){
-          this.$confirm('此操作将注销登录, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
+           this.$confirm('This operation will log you out, do you want to continue?', 'Prompt', {
+             confirmButtonText: 'OK',
+             cancelButtonText: 'Cancel',
+             type: 'warning'
+           }).then(() => {
             this.getRequest("/admin/logout");
-            sessionStorage.removeItem("admin");//删除session
-            this.$router.replace('/adminlogin');//页面替换为登陆页Login.vue
+            sessionStorage.removeItem("admin");
+            this.$router.replace('/adminlogin');
           }).catch(() => {
             this.$message({
               type: 'info',
-              message: '已取消操作'
+              message: 'Cancel'
             });
           });
         }else if (cmd=='userInfo'){
@@ -87,9 +87,9 @@
 <style>
   .homeHeader{
     background-color: #409eff;
-    display: flex;/*flex布局*/
-    align-items: center;/*cross交叉轴中*/
-    justify-content: space-between;/*左右两侧（main主轴）对齐*/
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding:0px;
     box-sizing:border-box;
   }

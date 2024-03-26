@@ -16,14 +16,10 @@
         <el-tooltip class="item" effect="dark" content="User List" placement="right">
         <el-button @click="chooseChatList('私聊')" class="toolBtn" size="small"><i class="fa fa-address-book-o fa-2x" aria-hidden="true"></i></el-button>
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="与机器人聊天" placement="right">
-          <el-button @click="chooseChatList('机器人')" class="toolBtn" size="small"><i class="fa fa-android fa-2x" aria-hidden="true"></i></el-button>
-        </el-tooltip>
+
       </div>
       <div class="bottomBtnBar">
-        <el-tooltip class="item" effect="dark" content="Personal Center" placement="right">
-          <el-button class="toolBtn" size="small"><i class="fa fa-user fa-2x" aria-hidden="true"></i></el-button>
-        </el-tooltip>
+
         <el-tooltip class="item" effect="dark" content="more" placement="right">
           <el-popover
                   placement="right"
@@ -32,8 +28,6 @@
                   popper-class="moreListPopoverClass"
                    >
             <ul id="moreList">
-              <li @click="showFeedbackDialog" >FeedBack</li>
-              <li>report</li>
               <li @click="clearChatHistory">clearChatHistory</li>
             </ul>
             <el-button slot="reference" class="toolBtn" size="small"><i class="fa fa-bars fa-2x" aria-hidden="true"></i></el-button>
@@ -44,7 +38,7 @@
         </el-tooltip>
       </div>
     </div>
-    <el-dialog title="意见反馈" :visible.sync="feedBackDialogVisible" class="feedbackDialog">
+    <el-dialog title="feedback" :visible.sync="feedBackDialogVisible" class="feedbackDialog">
       <textarea class="feedbackInput" v-model="feedBackContent">
 
       </textarea>
@@ -67,7 +61,7 @@
       }
     },
     methods:{
-      //退出系统
+
       exitSystem() {
       this.$confirm('Are you sure you want to exit the system?', 'System Prompt', {
         confirmButtonText: 'OK',
@@ -90,16 +84,16 @@
         });
       });
      },
-      //选择聊天列表
+
       chooseChatList(listName){
         this.$store.commit("changeCurrentList",listName);
       },
-      //打开意见反馈对话框
+
       showFeedbackDialog(){
         this.feedBackContent='';
         this.feedBackDialogVisible=true;
       },
-      //处理反馈消息邮件发送
+
       handleFeedbackSend(){
         let msgObj={};
         msgObj.userId=this.user.id;
@@ -113,7 +107,7 @@
           }
         })
       },
-      //清空聊天记录
+
       clearChatHistory() {
       this.$confirm('This action will permanently delete local chat history (group chat records will be restored upon next login). Continue?', 'Tip', {
         confirmButtonText: 'OK',
@@ -204,8 +198,7 @@
 
 </style>
 <style lang="scss">
-  /* el-popover是和app同级的，所以scoped的局部属性设置了无效 */
-  /* 需要设置全局style */
+
   .el-popover.moreListPopoverClass{
     height:150px;
     width:150px;
