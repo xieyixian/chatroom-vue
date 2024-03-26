@@ -5,20 +5,20 @@
 			<p style="padding: 2px 4px;height: 20px">Group Chat</p>
 			<li :class="{ active: currentSession?'群聊'== currentSession.username:false }"
 					v-on:click="changeCurrentSession(chatObj)">
-				<img class="avatar" src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1268761962,3976237305&fm=26&gp=0.jpg">
+				<img class="avatar" src="http://20.68.174.190/group1/M00/00/00/CgAABGYBrEqAb3LXAAALY52h4i8878.png">
 				<el-badge :is-dot="isDot[user.username+'#群聊']"><p class="name">GroupChat</p></el-badge>
 			</li>
 			</ul>
-<!--机器人-->
-		<ul v-if="currentList=='机器人'">
+<!-- 机器人-->
+		<!-- <ul v-if="currentList=='机器人'">
 			<p style="padding: 2px 4px;height: 20px">chat with robot</p>
 			<li :class="{ active: currentSession?'机器人'== currentSession.username:false }"
 					v-on:click="changeCurrentSession(robotObj)">
 				<img class="avatar" src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2548892998,499717296&fm=26&gp=0.jpg">
 				<p class="name">瓦力(智能回复)</p>
 			</li>
-		</ul>
-<!--用户列表-->
+		</ul> -->
+<!--用户列表 -->
 		<el-scrollbar      wrap-class="userList" wrap-style="height:600px;"
 											  view-style="height:100%;" :native="false">
 		<ul v-if="currentList=='私聊'" >

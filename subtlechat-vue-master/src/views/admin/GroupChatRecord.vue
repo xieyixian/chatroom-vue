@@ -1,28 +1,28 @@
 <template>
   <div>
     <div>
-      发送者昵称：<el-input v-model="nameKeyword" placeholder="输入发送者昵称" class="nameInput"></el-input>
-      发送时间：
+      Sender Nickname: <el-input v-model="nameKeyword" placeholder="Enter sender nickname" class="nameInput"></el-input>
+      Sending Time:
       <el-date-picker
             v-model="dateScope"
             type="datetimerange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            range-separator="to"
+            start-placeholder="Start Date"
+            end-placeholder="End Date"
             :editable="false"
             :unlink-panels="true"
             value-format="yyyy-MM-dd HH:mm:ss"
             class="topControlsBar">
     </el-date-picker>
-      消息类型：
+      Message Type:
       <el-radio-group v-model="msgTypeRadio" class="topControlsBar">
-        <el-radio :label="1">文本</el-radio>
-        <el-radio :label="2">图片</el-radio>
-        <el-radio :label="3">文件</el-radio>
+        <el-radio :label="1">Text</el-radio>
+        <el-radio :label="2">Image</el-radio>
+        <el-radio :label="3">File</el-radio>
       </el-radio-group>
-      <el-button @click="initMessTableData" icon="el-icon-search" type="primary" size="small" class="topControlsBar">搜索</el-button>
-      <el-button @click="refreshMessTableData" icon="el-icon-refresh" type="primary" size="small" class="topControlsBar">刷新表格</el-button>
-      <el-button @click="exportData" icon="el-icon-document" type="success" size="small" class="topControlsBar">导出Excel</el-button>
+      <el-button @click="initMessTableData" icon="el-icon-search" type="primary" size="small" class="topControlsBar">Search</el-button>
+      <el-button @click="refreshMessTableData" icon="el-icon-refresh" type="primary" size="small" class="topControlsBar">Refresh Table</el-button>
+      
     </div>
     <div style="margin-top: 15px">
       <el-table
@@ -38,33 +38,33 @@
         </el-table-column>
         <el-table-column
                 prop="id"
-                label="消息编号"
+                label="Message ID"
                 width="80">
         </el-table-column>
         <el-table-column
                 prop="fromId"
-                label="发送者编号"
+                label="Sender ID"
                 width="100">
         </el-table-column>
         <el-table-column
                 prop="fromName"
-                label="发送者昵称"
+                label="Sender Nickname"
                 width="150">
         </el-table-column>
         <el-table-column
                 prop="createTime"
-                label="发送时间"
+                label="Sending Time"
                 width="180">
         </el-table-column>
         <el-table-column
-                label="内容"
+                label="Content"
                 width="750">
           <template slot-scope="scope">
             <div v-if="scope.row.messageTypeId==1" v-html="scope.row.content"></div>
             <div v-else>
               <el-image :src="scope.row.content"
                         :preview-src-list="[scope.row.content]"
-                        style="width: 50px;height: 50px">
+                        style="width: 50px; height: 50px">
                 <div slot="error" class="image-slot">
                   <i class="el-icon-picture-outline"></i>
                 </div>
@@ -72,18 +72,18 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="Action">
           <template slot-scope="scope">
             <el-button
                     size="mini"
                     type="danger"
-                    @click="handleDelete(scope.row)">删除</el-button>
+                    @click="handleDelete(scope.row)">Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <div style="display: flex;justify-content: space-between;margin-top: 10px">
-      <el-button @click="handleMultiDelete" :disabled="multipleSelection.length==0?true:false" type="danger" icon="el-icon-delete">批量删除</el-button>
+    <div style="display: flex; justify-content: space-between; margin-top: 10px">
+      <el-button @click="handleMultiDelete" :disabled="multipleSelection.length==0?true:false" type="danger" icon="el-icon-delete">Bulk Delete</el-button>
       <el-pagination
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -95,126 +95,126 @@
       </el-pagination>
       </div>
   </div>
-  </template>
-  
-  <script>
-    export default {
-      name: "GroupChatRecord",
-      data(){
-        return{
-          messTableData: [],
-          msgTypeRadio:-1,
-          multipleSelection:[],//选中的每一项
-          page:1,//起始页数
-          size:10,//单页显示数据数
-          total:-1,//表格数据总数
-          nameKeyword:'',//查询昵称关键字
-          dateScope:null,//日期时间范围数组
-          loading:false,
+</template>
+
+<script>
+  export default {
+    name: "GroupChatRecord",
+    data(){
+      return{
+        messTableData: [],
+        msgTypeRadio:-1,
+        multipleSelection:[], // Selected items
+        page:1, // Starting page number
+        size:10, // Number of data items displayed per page
+        total:-1, // Total number of table data items
+        nameKeyword:'', // Search nickname keyword
+        dateScope:null, // Date time range array
+        loading:false,
+      }
+    },
+    mounted(){
+      this.initMessTableData();
+    },
+    methods:{
+      // Initialize table data
+      initMessTableData(){
+        this.loading=true;
+        let url="/groupMsgContent/page?page="+this.page+"&size="+this.size;
+        if (this.nameKeyword!=' '){
+          url+="&nickname="+this.nameKeyword;
         }
+        if (this.dateScope){
+          url+="&dateScope="+this.dateScope;
+        }
+        if (this.msgTypeRadio!=-1){
+          url+="&type="+this.msgTypeRadio;
+        }
+        this.getRequest(url).then(resp=>{
+          this.messTableData=resp.data;
+          this.total=resp.total;
+          setTimeout(()=>{
+            this.loading=false;
+          },1000)
+        })
       },
-      mounted(){
+      // Refresh the table data
+      refreshMessTableData(){
+        this.nameKeyword='';
+        this.dateScope=null;
+        this.msgTypeRadio=-1;
         this.initMessTableData();
       },
-      methods:{
-        //初始化表格数据
-        initMessTableData(){
-          this.loading=true;
-          let url="/groupMsgContent/page?page="+this.page+"&size="+this.size;
-          if (this.nameKeyword!=''){
-            url+="&nickname="+this.nameKeyword;
-          }
-          if (this.dateScope){
-            url+="&dateScope="+this.dateScope;
-          }
-          if (this.msgTypeRadio!=-1){
-            url+="&type="+this.msgTypeRadio;
-          }
-          this.getRequest(url).then(resp=>{
-            this.messTableData=resp.data;
-            this.total=resp.total;
-            setTimeout(()=>{
-              this.loading=false;
-            },1000)
+      // Export data to an Excel file
+      exportData(){
+        window.open("/groupMsgContent/download","_parent");
+      },
+      handleSizeChange(val){
+        this.size=val;
+        this.initMessTableData();
+      },
+      handleCurrentChange(val){
+        this.page=val;
+        this.initMessTableData();
+      },
+      // Event triggered when the selection changes
+      handleSelectionChange(val){
+        this.multipleSelection=val;
+      },
+      // Delete a single data entry
+      handleDelete(data){
+        this.$confirm('This action will permanently delete this message record, do you want to continue?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          // Action after clicking OK
+          this.deleteRequest("/groupMsgContent/"+data.id).then(resp=>{
+            if (resp){
+              this.initMessTableData();
+            }
           })
-        },
-        //刷新表格
-        refreshMessTableData(){
-          this.nameKeyword='';
-          this.dateScope=null;
-          this.msgTypeRadio=-1;
-          this.initMessTableData();
-        },
-        //导出数据到Excel文件中
-        exportData(){
-          window.open("/groupMsgContent/download","_parent");
-        },
-        handleSizeChange(val){
-          this.size=val;
-          this.initMessTableData();
-        },
-        handleCurrentChange(val){
-          this.page=val;
-          this.initMessTableData();
-        },
-        //当选择项发生变化时会触发该事件
-        handleSelectionChange(val){
-          this.multipleSelection=val;
-        },
-        //单条数据删除
-        handleDelete(data){
-          this.$confirm('此操作将永久删除该条消息记录, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            //点击确定后即执行
-            this.deleteRequest("/groupMsgContent/"+data.id).then(resp=>{
-              if (resp){
-                this.initMessTableData();
-              }
-            })
-          }).catch(() => {
-            //点击了取消
-            this.$message({
-              type: 'info',
-              message: '已取消删除'
-            });
+        }).catch(() => {
+          // Action after clicking cancel
+          this.$message({
+            type: 'info',
+            message: 'Deletion cancelled'
           });
-        },
-        //批量删除数据
-        handleMultiDelete(){
-          this.$confirm('此操作将永久删除【'+this.multipleSelection.length+'】条记录, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            let url="/groupMsgContent/?";
-            this.multipleSelection.forEach(item=>{
-              url+="ids="+item.id+"&";
-            });
-            this.deleteRequest(url).then(resp=>{
-              if (resp){
-                this.initMessTableData();
-              }
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除'
-            });
+        });
+      },
+      // Bulk delete data entries
+      handleMultiDelete(){
+        this.$confirm('This action will permanently delete ['+this.multipleSelection.length+'] records, do you want to continue?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          let url="/groupMsgContent/?";
+          this.multipleSelection.forEach(item=>{
+            url+="ids="+item.id+"&";
           });
-        }
-  
+          this.deleteRequest(url).then(resp=>{
+            if (resp){
+              this.initMessTableData();
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Deletion cancelled'
+          });
+        });
       }
+
     }
-  </script>
-  
-  <style scoped>
-    .nameInput{
-      width: 150px;
-    }
-    .topControlsBar{
-      margin:0 10px;
-    }
-  </style>
+  }
+</script>
+
+<style scoped>
+  .nameInput{
+    width: 150px;
+  }
+  .topControlsBar{
+    margin:0 10px;
+  }
+</style>

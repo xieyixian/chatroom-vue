@@ -44,29 +44,29 @@ Vue.use(VueRouter)
     },
     {
       path:'/home',
-      name:'用户管理',
+      name:'User Management',
       component:Home,
       iconCls:"fa fa-user",
       children:[{
         path:'/userinfo',
-        name:'用户信息管理',
+        name:'User Information Management',
         component:UserInfo,
       }]
     },
     {
       path:'/home',
-      name:'聊天记录管理',
+      name:'Chat Record Management',
       iconCls:'fa fa-book',
       component:Home,
       children:[
         {
           path:'/groupChatRecord',
-          name:'群聊记录管理',
+          name:'Group Chat Record Management',
           component:GroupChatRecord
         },
         {
           path:'/privateChatRecord',
-          name:'私聊记录管理',
+          name:'Private Chat Record Management',
           component:PrivateChatRecord
         }
       ]

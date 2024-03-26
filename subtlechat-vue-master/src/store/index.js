@@ -136,7 +136,7 @@ const store =  new Vuex.Store({
      */
     connect(context){
       //连接Stomp站点
-      console.log("尝试连接WebSocket服务...");
+      console.log("Try to connect to WebSocket service...");
       context.state.stomp=Stomp.over(new SockJS('/ws/ep'));
       context.state.stomp.connect({},success=>{
         /**
@@ -145,7 +145,7 @@ const store =  new Vuex.Store({
         context.state.stomp.subscribe("/topic/notification",msg=>{
           //判断是否是系统广播通知
             Notification.info({
-              title: '系统消息',
+              title: 'system information',
               message: msg.body.substr(5),
               position:"top-right"
             });
@@ -194,7 +194,7 @@ const store =  new Vuex.Store({
           //没有选中用户或选中用户不是发来消息的那一方
           if (!context.state.currentSession||receiveMsg.from!=context.state.currentSession.username){
             Notification.info({
-              title:'【'+receiveMsg.fromNickname+'】发来一条消息',
+              title:'【'+receiveMsg.fromNickname+'】Sent a message',
               message:receiveMsg.content.length<8?receiveMsg.content:receiveMsg.content.substring(0,8)+"...",
               position:"bottom-right"
             });
@@ -210,8 +210,8 @@ const store =  new Vuex.Store({
         })
       },error=>{
         Notification.info({
-          title: '系统消息',
-          message: "无法与服务端建立连接，请尝试重新登陆系统~",
+          title: 'system information',
+          message: "Unable to establish connection with the server, please try to log in to the system again",
           position:"top-right"
         });
       })
@@ -220,7 +220,7 @@ const store =  new Vuex.Store({
     disconnect(context){
      if (context.state.stomp!=null) {
        context.state.stomp.disconnect();
-       console.log("关闭连接~");
+       console.log("close connection");
      }
     },
   }

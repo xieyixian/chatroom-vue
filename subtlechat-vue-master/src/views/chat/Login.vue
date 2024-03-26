@@ -79,17 +79,19 @@
 <script>
 import JSEncrypt from 'jsencrypt';
 import axios from 'axios';
+import { MessageBox } from 'element-ui';
+const vm = this;
   export default {
     name: "Login",
     data(){
       var validateNickname = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入昵称'));
+          callback(new Error('Please enter a nickname'));
         }
         //检查昵称是否重复
           this.getRequest("user/checkNickname?nickname="+value).then(resp=>{
             if (resp!=0){
-              callback(new Error("该昵称已被注册"))
+              callback(new Error("This nickname has been registered"))
             } else {
               callback();
             }
@@ -97,12 +99,12 @@ import axios from 'axios';
       };
       var validateUsername = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入用户名'));
+          callback(new Error('please enter user name'));
         }
         //检查用户名是否重复
         this.getRequest("/user/checkUsername?username="+value).then(resp=>{
             if (resp!=0){
-              callback(new Error('该用户名已被注册'));
+              callback(new Error('this username has been registered'));
             }
             else {
               callback();
@@ -112,7 +114,7 @@ import axios from 'axios';
       };
       var validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('Please enter password'));
         } else {
           if (this.registerForm.checkPass !== '') {
             this.$refs.registerForm.validateField('checkPass');
@@ -122,9 +124,9 @@ import axios from 'axios';
       };
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请再次输入密码'));
+          callback(new Error('Please enter password again'));
         } else if (value !== this.registerForm.password) {
-          callback(new Error('两次输入密码不一致!'));
+          callback(new Error('The password entered twice is inconsistent!'));
         } else {
           callback();
         }
@@ -139,11 +141,11 @@ import axios from 'axios';
         verifyCode:'/verifyCode',
         checked:true,
         rules: {
-          username:[{required:true,message:'请输入用户名',trigger:'blur'}],
-          password:[{required:true,message: '请输入密码',trigger:'blur'}],
-          code:[{required:true,message: '请输入验证码',trigger:'blur'}],
-          email:[{required:true,message: '请输入邮箱',trigger:'blur'}],
-          mailCode:[{required:true,message: '请输入验证码',trigger:'blur'}]
+          username:[{required:true,message:'please enter user name',trigger:'blur'}],
+          password:[{required:true,message: 'Please enter password',trigger:'blur'}],
+          code:[{required:true,message: 'please enter verification code',trigger:'blur'}],
+          email:[{required:true,message: 'please input your email',trigger:'blur'}],
+          mailCode:[{required:true,message: 'please enter verification code',trigger:'blur'}]
         },
         fullscreenLoading:false,
         //注册表单相关
@@ -240,43 +242,88 @@ import axios from 'axios';
           return decryptedObj;
         },
 
-      submitLogin(){
-        this.$refs.loginForm.validate((valid) => {
-          if (valid) {
-            this.fullscreenLoading=true;
-            this.encryptData();
-            this.postKeyValueRequest('/doLogin',this.loginForm).then(resp=>{
-              setTimeout(()=>{
-                this.fullscreenLoading=false;
-              },1000);
-              if (resp){
-                //保存当前用户到vuex
-                console.log("6666666666666666aaaaaaaaaaacccccc:", resp.obj.user);
-                this.$store.state.currentUser=resp.obj.user;
-                //保存登录用户到sessionStorage中
-                console.log('11111111111111111111111111',resp)
-                window.sessionStorage.setItem("user",JSON.stringify(resp.obj.user));
-                console.log('11111111111111111111111111', window.sessionStorage.getItem("user"))
-                //let path=this.$route.query.redirect;
-               // this.$router.replace((path=='/'||path==undefined)?"/chatroom":path);
 
-                //resp.obj=this.decryptData(resp.obj);
-                sessionStorage.setItem("encryptedPassword",this.loginForm.password)
-                sessionStorage.setItem("code",this.loginForm.code)
-                this.$router.replace("/mailLogin");
-              
-              }else {
-                this.loginForm.username='';
-                this.loginForm.password='';
-                this.changeverifyCode();
-              }
-            })
-          } else {
-            this.$message.error("用户名,密码和验证码都不能为空！");
-            return false;
-          }
-        });
+        async checkIPAddress() {
+  try {
+    const response = await fetch('http://localhost:5000/ipcheck', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
       },
+      body: JSON.stringify({ /* 你需要发送的数据 */ })
+    });
+    
+    const data = await response.json();
+   // console.log("111111111111111:", data.prediction);
+    return data.prediction; // 直接返回预测值
+  } catch (error) {
+    console.error('IP check request failed:', error);
+    throw new Error('IP check request failed');
+  }
+},
+
+async submitLogin() {
+  // 获取IP检查的结果
+  const ipcheck = await this.checkIPAddress();
+
+  if (ipcheck !== 2) {
+    let message;
+
+    if (ipcheck === 0) {
+      message = 'Your IP check passed, do you want to continue logging in??';
+    } else {
+      message = 'Your IP may be a threat. Do you want to continue logging in?';
+    }
+     console.log('message:', message);
+    try {
+      await this.$confirm(message, 'confirm', {
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      });
+
+      // 弹窗后的逻辑处理
+      this.$refs.loginForm.validate(async (valid) => {
+        if (valid) {
+          this.fullscreenLoading = true;
+          this.encryptData();
+
+          try {
+            const resp = await this.postKeyValueRequest('/doLogin', this.loginForm);
+            setTimeout(() => {
+              this.fullscreenLoading = false;
+            }, 1000);
+
+            if (resp) {
+              // 成功逻辑处理
+              this.$store.state.currentUser = resp.obj.user;
+              sessionStorage.setItem("encryptedPassword", this.loginForm.password);
+              sessionStorage.setItem("code", this.loginForm.code);
+              this.$router.replace("/mailLogin");
+            } else {
+              // 登录失败逻辑处理
+              this.loginForm.username = '';
+              this.loginForm.password = '';
+              this.changeverifyCode();
+            }
+          } catch (error) {
+            this.fullscreenLoading = false;
+            console.error('Login request failed:', error);
+          }
+        } else {
+          this.$message.error("Username, password and verification code cannot be empty!");
+        }
+      });
+    } catch (error) {
+      // 用户取消弹窗
+      console.log('User canceled the operation');
+    }
+  } else {
+    // 黑名单用户的处理逻辑
+    console.log("Blacklist cannot log in to the system:", ipcheck);
+  }
+},
+
       changeverifyCode(){
         this.verifyCode="/verifyCode?time="+new Date();
       },
@@ -294,7 +341,7 @@ import axios from 'axios';
         let isLt4M = file.size / 1024 / 1024 < 4;
 
         if (!isLt4M) {
-          this.$message.error('上传头像图片大小不能超过 4MB!');
+          this.$message.error('The size of the uploaded avatar image cannot exceed 4MB!');
         }
         return isLt4M;
       },
@@ -306,11 +353,11 @@ import axios from 'axios';
       imgSuccess(response, file, fileList) {
         this.uploadDisabled = true;
         this.registerForm.userProfile=response;//将返回的路径给表单的头像属性
-        console.log("图片url为："+this.registerForm.userProfile);
+        console.log("The image url is:"+this.registerForm.userProfile);
       },
       // 图片上传失败
       imgError(err, file, fileList){
-        this.$message.error("上传失败");
+        this.$message.error("upload failed");
         this.uploadDisabled = false;
       },
       //移除图片
@@ -341,7 +388,7 @@ import axios from 'axios';
               }
             })
           } else {
-            this.$message.error("请正确填写信息！");
+            this.$message.error("Please fill in the information correctly!");
             console.log('error submit!!');
             return false;
           }
@@ -359,12 +406,12 @@ import axios from 'axios';
             // 30s内不得再次发送
             let i = 30;
             let id = setInterval(() => {
-              this.getCodeBtnText = i-- + "s内不能发送";
+              this.getCodeBtnText = i-- + "s Cannot send within ";
             }, 1000);
             setTimeout(() => {
               clearInterval(id);
               this.getCodeEnable = false;
-              this.getCodeBtnText = "获取邮箱验证码";
+              this.getCodeBtnText = "Get email verification code";
             }, 30000);
           }
         } catch (error) {
@@ -385,12 +432,12 @@ import axios from 'axios';
             // 30s内不得再次发送
             let i = 30;
             let id = setInterval(() => {
-              this.getCodeBtnText = i-- + "s内不能发送";
+              this.getCodeBtnText = i-- + "s Cannot send within";
             }, 1000);
             setTimeout(() => {
               clearInterval(id);
               this.getCodeEnable = false;
-              this.getCodeBtnText = "获取邮箱验证码";
+              this.getCodeBtnText = "Get email verification code";
             }, 30000);
           }
         } catch (error) {

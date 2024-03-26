@@ -40,10 +40,9 @@ import axios from 'axios';
         },
         checked:true,
         rules: {
-          username:[{required:true,message:'请输入用户名',trigger:'blur'}],
-          password:[{required:true,message: '请输入密码',trigger:'blur'}],
-          //开发环境 mailCode:[{required:true,message: '请输入验证码',trigger:'blur'}]
-          mailCode:[{required:false,message: '请输入验证码',trigger:'blur'}]
+          username:[{required:true,message:'please enter user name',trigger:'blur'}],
+          password:[{required:true,message: 'Please enter password',trigger:'blur'}],
+          mailCode:[{required:false,message: 'please enter verification code',trigger:'blur'}]
         },
         fullscreenLoading:false,
         getCodeEnable:false,
@@ -112,7 +111,7 @@ import axios from 'axios';
               }
             })
           } else {
-            this.$message.error("用户名，密码和验证码不能为空！");
+            this.$message.error("Username, password and verification code cannot be empty!");
             return false;
           }
         });
@@ -131,12 +130,12 @@ import axios from 'axios';
             //30s内不得再次发送
               let i=30;
             let id=setInterval(()=>{
-              this.getCodeBtnText=i--+"s内不能发送";
+              this.getCodeBtnText=i--+"s Cannot send within";
             },1000);
             setTimeout(()=>{
               clearInterval(id);
               this.getCodeEnable=false;
-              this.getCodeBtnText="获取邮箱验证码";
+              this.getCodeBtnText="Get email verification code";
             },30000)
           }
         })
